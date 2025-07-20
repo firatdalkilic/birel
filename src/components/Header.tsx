@@ -11,14 +11,14 @@ const menu = [
 export default function Header() {
   return (
     <header className="w-full bg-white shadow-sm sticky top-0 z-30">
-      <nav className="container mx-auto flex items-center justify-between py-3 px-4 md:px-0">
-        <Link href="/" className="text-2xl font-bold text-primary tracking-tight select-none">
+      <nav className="max-w-6xl mx-auto flex items-center justify-between py-4 px-4">
+        <Link href="/" className="text-3xl font-bold text-yellow-400 tracking-tight select-none font-sans">
           Bir El
         </Link>
-        <ul className="hidden md:flex gap-6 text-text font-medium">
+        <ul className="hidden md:flex gap-6 text-gray-700 font-medium">
           {menu.map((item) => (
             <li key={item.href}>
-              <Link href={item.href} className="hover:text-primary transition-colors">
+              <Link href={item.href} className="hover:text-yellow-500 transition-colors px-2 py-1 rounded-md">
                 {item.name}
               </Link>
             </li>

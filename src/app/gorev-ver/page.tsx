@@ -76,12 +76,12 @@ export default function GorevVer() {
   };
 
   return (
-    <main className="flex-1 flex flex-col items-center justify-center py-8 px-4 bg-background">
-      <section className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-6 md:p-10">
-        <h2 className="text-2xl font-bold text-primary mb-4 text-center">Görev Ver</h2>
-        <form className="space-y-4" onSubmit={handleSubmit} autoComplete="off">
+    <main className="flex-1 flex flex-col items-center justify-center py-8 px-2 bg-gray-50">
+      <section className="w-full max-w-xl bg-white shadow-lg p-8 rounded-xl mx-auto">
+        <h2 className="text-3xl font-bold text-yellow-500 mb-6 text-center font-sans">Görev Ver</h2>
+        <form className="space-y-5" onSubmit={handleSubmit} autoComplete="off">
           <div>
-            <label className="block font-medium mb-1" htmlFor="adSoyad">Ad Soyad *</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="adSoyad">Ad Soyad *</label>
             <input
               type="text"
               id="adSoyad"
@@ -89,11 +89,11 @@ export default function GorevVer() {
               value={form.adSoyad}
               onChange={handleChange}
               required
-              className="w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50"
             />
           </div>
           <div>
-            <label className="block font-medium mb-1" htmlFor="telefon">Telefon Numarası *</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="telefon">Telefon Numarası *</label>
             <input
               type="tel"
               id="telefon"
@@ -101,11 +101,11 @@ export default function GorevVer() {
               value={form.telefon}
               onChange={handleChange}
               required
-              className="w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50"
             />
           </div>
           <div>
-            <label className="block font-medium mb-1" htmlFor="sehirIlce">Şehir / İlçe *</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="sehirIlce">Şehir / İlçe *</label>
             <input
               type="text"
               id="sehirIlce"
@@ -113,11 +113,11 @@ export default function GorevVer() {
               value={form.sehirIlce}
               onChange={handleChange}
               required
-              className="w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50"
             />
           </div>
           <div>
-            <label className="block font-medium mb-1" htmlFor="baslik">Görev Başlığı</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="baslik">Görev Başlığı</label>
             <input
               type="text"
               id="baslik"
@@ -125,29 +125,29 @@ export default function GorevVer() {
               value={form.baslik}
               onChange={handleChange}
               placeholder="Örn: Annemin ilacını eczaneden alabilir misin?"
-              className="w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50"
             />
           </div>
           <div>
-            <label className="block font-medium mb-1" htmlFor="aciklama">Görev Açıklaması</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="aciklama">Görev Açıklaması</label>
             <textarea
               id="aciklama"
               name="aciklama"
               value={form.aciklama}
               onChange={handleChange}
               rows={3}
-              className="w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50"
             />
           </div>
           <div>
-            <label className="block font-medium mb-1" htmlFor="aciliyet">Aciliyet *</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="aciliyet">Aciliyet *</label>
             <select
               id="aciliyet"
               name="aciliyet"
               value={form.aciliyet}
               onChange={handleChange}
               required
-              className="w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50"
             >
               {ACILIYET.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -155,7 +155,7 @@ export default function GorevVer() {
             </select>
           </div>
           <div>
-            <label className="block font-medium mb-1" htmlFor="butce">Tahmini Bütçe</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="butce">Tahmini Bütçe</label>
             <input
               type="text"
               id="butce"
@@ -163,7 +163,7 @@ export default function GorevVer() {
               value={form.butce}
               onChange={handleChange}
               placeholder="Opsiyonel"
-              className="w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -174,16 +174,16 @@ export default function GorevVer() {
               checked={form.gizlilikOnayi}
               onChange={handleChange}
               required
-              className="accent-primary w-5 h-5"
+              className="accent-yellow-400 w-5 h-5"
             />
-            <label htmlFor="gizlilikOnayi" className="text-sm">Gizlilik ve sorumluluk koşullarını kabul ediyorum. *</label>
+            <label htmlFor="gizlilikOnayi" className="text-sm text-gray-600">Gizlilik ve sorumluluk koşullarını kabul ediyorum. *</label>
           </div>
           {error && <div className="text-red-600 text-sm">{error}</div>}
           {success && <div className="text-green-600 text-sm">Görev başarıyla iletildi!</div>}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary hover:bg-yellow-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition text-lg disabled:opacity-60"
+            className="w-full min-h-[48px] bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-2 px-6 rounded-xl shadow-md transition duration-200 text-lg disabled:opacity-60"
           >
             {loading ? "Gönderiliyor..." : "Görevi İlet"}
           </button>

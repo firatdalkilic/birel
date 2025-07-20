@@ -83,12 +83,12 @@ export default function GorevliOl() {
   };
 
   return (
-    <main className="flex-1 flex flex-col items-center justify-center py-8 px-4 bg-background">
-      <section className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-6 md:p-10">
-        <h2 className="text-2xl font-bold text-primary mb-4 text-center">Görevli Ol</h2>
-        <form className="space-y-4" onSubmit={handleSubmit} autoComplete="off">
+    <main className="flex-1 flex flex-col items-center justify-center py-8 px-2 bg-gray-50">
+      <section className="w-full max-w-xl bg-white shadow-lg p-8 rounded-xl mx-auto">
+        <h2 className="text-3xl font-bold text-yellow-500 mb-6 text-center font-sans">Görevli Ol</h2>
+        <form className="space-y-5" onSubmit={handleSubmit} autoComplete="off">
           <div>
-            <label className="block font-medium mb-1" htmlFor="adSoyad">Ad Soyad *</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="adSoyad">Ad Soyad *</label>
             <input
               type="text"
               id="adSoyad"
@@ -96,11 +96,11 @@ export default function GorevliOl() {
               value={form.adSoyad}
               onChange={handleChange}
               required
-              className="w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50"
             />
           </div>
           <div>
-            <label className="block font-medium mb-1" htmlFor="telefon">Telefon *</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="telefon">Telefon *</label>
             <input
               type="tel"
               id="telefon"
@@ -108,11 +108,11 @@ export default function GorevliOl() {
               value={form.telefon}
               onChange={handleChange}
               required
-              className="w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50"
             />
           </div>
           <div>
-            <label className="block font-medium mb-1" htmlFor="sehirIlce">Şehir / İlçe *</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="sehirIlce">Şehir / İlçe *</label>
             <input
               type="text"
               id="sehirIlce"
@@ -120,11 +120,11 @@ export default function GorevliOl() {
               value={form.sehirIlce}
               onChange={handleChange}
               required
-              className="w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50"
             />
           </div>
           <div>
-            <span className="block font-medium mb-1">Yapabileceği Görev Türleri *</span>
+            <span className="block text-gray-700 font-medium mb-2">Yapabileceği Görev Türleri *</span>
             <div className="flex flex-col gap-2">
               {GOREV_TURLERI.map((tur) => (
                 <label key={tur} className="flex items-center gap-2">
@@ -134,15 +134,15 @@ export default function GorevliOl() {
                     value={tur}
                     checked={form.gorevTurleri.includes(tur)}
                     onChange={handleChange}
-                    className="accent-primary w-5 h-5"
+                    className="accent-yellow-400 w-5 h-5"
                   />
-                  <span className="text-sm">{tur}</span>
+                  <span className="text-sm text-gray-600">{tur}</span>
                 </label>
               ))}
             </div>
           </div>
           <div>
-            <label className="block font-medium mb-1" htmlFor="uygunSaat">Uygun Saat Bilgisi *</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="uygunSaat">Uygun Saat Bilgisi *</label>
             <input
               type="text"
               id="uygunSaat"
@@ -151,11 +151,11 @@ export default function GorevliOl() {
               onChange={handleChange}
               required
               placeholder="Örn: Hafta içi 18:00 sonrası"
-              className="w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50"
             />
           </div>
           <div>
-            <label className="block font-medium mb-1" htmlFor="referans">Referans (isteğe bağlı)</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="referans">Referans (isteğe bağlı)</label>
             <input
               type="text"
               id="referans"
@@ -163,7 +163,7 @@ export default function GorevliOl() {
               value={form.referans}
               onChange={handleChange}
               placeholder="Varsa belirtiniz"
-              className="w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -174,16 +174,16 @@ export default function GorevliOl() {
               checked={form.kvkkOnayi}
               onChange={handleChange}
               required
-              className="accent-primary w-5 h-5"
+              className="accent-yellow-400 w-5 h-5"
             />
-            <label htmlFor="kvkkOnayi" className="text-sm">KVKK onayını kabul ediyorum. *</label>
+            <label htmlFor="kvkkOnayi" className="text-sm text-gray-600">KVKK onayını kabul ediyorum. *</label>
           </div>
           {error && <div className="text-red-600 text-sm">{error}</div>}
           {success && <div className="text-green-600 text-sm">Başvurunuz başarıyla iletildi!</div>}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary hover:bg-yellow-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition text-lg disabled:opacity-60"
+            className="w-full min-h-[48px] bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-2 px-6 rounded-xl shadow-md transition duration-200 text-lg disabled:opacity-60"
           >
             {loading ? "Gönderiliyor..." : "Başvuruyu İlet"}
           </button>
