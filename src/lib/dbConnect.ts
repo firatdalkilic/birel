@@ -6,7 +6,9 @@ if (!MONGODB_URI) {
   throw new Error('Lütfen .env.local dosyanıza MONGODB_URI ekleyin.');
 }
 
-let cached = (global as any).mongoose || { conn: null, promise: null };
+type MongooseCache = { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null };
+const globalWithMongoose = global as typeof globalThis & { mongoose?: MongooseCache };
+const cached: MongooseCache = globalWithMongoose.mongoose || { conn: null, promise: null };
 
 export async function dbConnect() {
   if (cached.conn) return cached.conn;
@@ -20,5 +22,5 @@ export async function dbConnect() {
 }
 
 if (typeof window === 'undefined') {
-  (global as any).mongoose = cached;
+  globalWithMongoose.mongoose = cached;
 } 
