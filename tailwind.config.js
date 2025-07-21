@@ -8,11 +8,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#FFC300',
-        secondary: '#202C39',
-        background: '#FAFAFA',
-        accent: '#1DB954',
-        'footer-bg': '#F0F0F0',
+        primary: '#FACC15', // yellow-400
+        secondary: '#15803D', // green-800
+        background: '#FFFDF6',
+        'background-alt': '#FDFCFB',
+        text: {
+          DEFAULT: '#0F172A', // slate-900
+          secondary: '#475569', // slate-600
+        }
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],

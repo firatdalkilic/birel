@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const STATS = [
@@ -17,11 +18,42 @@ const STATS = [
   },
 ];
 
+const HOW_IT_WORKS = [
+  {
+    icon: "📝",
+    title: "Görevini yaz",
+    description: "İhtiyacını detaylı bir şekilde paylaş",
+  },
+  {
+    icon: "🤝",
+    title: '"Bir El" seni eşleştirir',
+    description: "Güvenilir görevlilerle hızlıca eşleş",
+  },
+  {
+    icon: "✅",
+    title: "Yardım tamamlanır",
+    description: "Görevin güvenle yerine getirilir",
+  },
+];
+
+const TESTIMONIALS = [
+  {
+    name: "Ayşe K.",
+    avatar: "A",
+    text: "Anneme ilaç aldım, 15 dk içinde görevli geldi.",
+  },
+  {
+    name: "Mehmet D.",
+    avatar: "M",
+    text: "Başta tereddüt ettim ama inanılmaz güvenliydi.",
+  },
+];
+
 export default function Home() {
   return (
     <main className="flex-1">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary/10 to-background pt-16 pb-32">
+      <section className="relative overflow-hidden bg-gradient-to-b from-primary/5 to-background pt-16 pb-32">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
             {/* Content */}
@@ -30,63 +62,36 @@ export default function Home() {
                 Senin yerine,{" "}
                 <span className="text-primary">bir el uzanır.</span>
               </h1>
-              <p className="text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto lg:mx-0">
+              <p className="text-lg md:text-xl text-text-secondary mb-12 max-w-2xl mx-auto lg:mx-0">
                 Gündelik, karmaşık veya seni zorlayan görevler için artık yanındayız.
                 Görev ver, sistem senin yerine halletsin.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                 <Link 
                   href="/gorev-ver" 
-                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-6 rounded-xl shadow-md transition duration-200"
+                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-text font-semibold py-3 px-6 rounded-xl shadow-md transition duration-200"
                 >
                   Görev Ver
                 </Link>
                 <Link 
                   href="/gorevli-ol"
-                  className="w-full sm:w-auto border-2 border-primary hover:bg-primary/10 text-primary font-semibold py-3 px-6 rounded-xl shadow-md transition duration-200"
+                  className="w-full sm:w-auto border-2 border-primary hover:bg-primary/10 text-text font-semibold py-3 px-6 rounded-xl shadow-md transition duration-200"
                 >
                   Görevli Ol
                 </Link>
               </div>
             </div>
 
-            {/* Illustration */}
+            {/* Hero Image */}
             <div className="lg:flex-1">
-              <div className="relative w-full max-w-lg mx-auto">
-                <svg
-                  className="w-full h-auto"
-                  viewBox="0 0 400 300"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  {/* Helper Character */}
-                  <circle cx="200" cy="150" r="120" fill="#FFF5D6" />
-                  <circle cx="200" cy="120" r="40" fill="#FFE082" />
-                  <rect x="170" y="160" width="60" height="80" rx="20" fill="#F7B500" />
-                  <circle cx="200" cy="110" r="15" fill="#F7B500" />
-
-                  {/* Shopping Bag */}
-                  <path
-                    d="M280 160H320V220C320 231.046 311.046 240 300 240H300C288.954 240 280 231.046 280 220V160Z"
-                    fill="#FFE082"
-                  />
-                  <path d="M280 160H320" stroke="#F7B500" strokeWidth="8" strokeLinecap="round" />
-                  <path
-                    d="M290 150C290 130 300 120 300 120C300 120 310 130 310 150"
-                    stroke="#F7B500"
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Medicine Box */}
-                  <rect x="80" y="180" width="40" height="40" rx="4" fill="#FFE082" />
-                  <path
-                    d="M90 200H110M100 190V210"
-                    stroke="#F7B500"
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                  />
-                </svg>
+              <div className="relative w-full aspect-[4/3] max-w-lg mx-auto">
+                <Image
+                  src="https://images.unsplash.com/photo-1592009309600-c5a7c004fba3"
+                  alt="Bir El yardımlaşma platformu"
+                  fill
+                  className="object-cover rounded-2xl shadow-xl"
+                  priority
+                />
               </div>
             </div>
           </div>
@@ -94,7 +99,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-background-alt">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {STATS.map((stat, index) => (
@@ -109,7 +114,7 @@ export default function Home() {
                   {stat.value && (
                     <div className="text-3xl font-bold text-text mb-1">{stat.value}</div>
                   )}
-                  <div className="text-gray-600">{stat.label}</div>
+                  <div className="text-text-secondary">{stat.label}</div>
                 </div>
               </div>
             ))}
@@ -117,42 +122,55 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* How it Works */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-text text-center mb-12">
+            Nasıl Çalışır?
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            {HOW_IT_WORKS.map((step, index) => (
+              <div
+                key={index}
+                className="bg-[#FFFDF6] p-8 rounded-2xl shadow-lg text-center relative"
+              >
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
+                  {step.icon}
+                </div>
+                <h3 className="text-xl font-semibold text-text mb-3">{step.title}</h3>
+                <p className="text-text-secondary">{step.description}</p>
+                {index < HOW_IT_WORKS.length - 1 && (
+                  <div className="hidden md:block absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2 text-4xl text-primary/30">
+                    →
+                  </div>
+                )}
               </div>
-              <h3 className="text-xl font-semibold mb-2">Hızlı Çözüm</h3>
-              <p className="text-gray-600">Görevleriniz için hızlı ve güvenilir destek bulun.</p>
-            </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            {/* Feature 2 */}
-            <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
+      {/* Testimonials */}
+      <section className="py-16 bg-background-alt">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-text text-center mb-12">
+            Gerçek kullanıcılarımızdan
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {TESTIMONIALS.map((testimonial, index) => (
+              <div
+                key={index}
+                className="bg-white p-6 rounded-2xl shadow-lg"
+              >
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center text-lg font-semibold text-text">
+                    {testimonial.avatar}
+                  </div>
+                  <div className="font-semibold text-text">{testimonial.name}</div>
+                </div>
+                <p className="text-text-secondary italic">"{testimonial.text}"</p>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Güvenli Platform</h3>
-              <p className="text-gray-600">Tüm görevliler kontrol edilir ve onaylanır.</p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Gönüllü Ağı</h3>
-              <p className="text-gray-600">Geniş gönüllü ağımızla her göreve çözüm.</p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
