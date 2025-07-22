@@ -79,6 +79,7 @@ export default function GorevliKayit() {
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
+    console.log('Form validasyonu başladı');
 
     if (!formData.firstName) newErrors.firstName = "Ad alanı zorunludur";
     if (!formData.lastName) newErrors.lastName = "Soyad alanı zorunludur";
@@ -94,13 +95,19 @@ export default function GorevliKayit() {
     if (!formData.availability.length) newErrors.availability = "En az bir gün seçmelisiniz";
     if (!formData.kvkkAccepted) newErrors.kvkkAccepted = "KVKK metnini onaylamalısınız";
 
+    console.log('Validasyon hataları:', newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    console.log('Form submit başladı');
+    
+    if (!validateForm()) {
+      console.log('Form validasyonu başarısız');
+      return;
+    }
 
     setLoading(true);
     try {
@@ -108,13 +115,29 @@ export default function GorevliKayit() {
       const res = await fetch("/api/register-gorevli", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+          city: formData.city,
+          district: formData.district,
+          tasks: formData.tasks,
+          transportation: formData.transportation,
+          availability: formData.availability,
+          about: formData.about,
+          kvkkAccepted: formData.kvkkAccepted
+        }),
       });
 
       const data = await res.json();
       console.log('API yanıtı:', data);
 
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) {
+        console.error('API hatası:', data.error);
+        throw new Error(data.error || 'Bir hata oluştu');
+      }
 
       // Token'ı localStorage'a kaydet
       localStorage.setItem("token", data.token);
