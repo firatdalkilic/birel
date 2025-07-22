@@ -7,8 +7,6 @@ const NAVIGATION = [
   { name: "Ana Sayfa", href: "/" },
   { name: "Görev Ver", href: "/gorev-ver" },
   { name: "Görevli Ol", href: "/gorevli-ol" },
-  { name: "Hakkımızda", href: "/hakkimizda" },
-  { name: "İletişim", href: "/iletisim" },
 ];
 
 export default function Header() {
@@ -16,12 +14,12 @@ export default function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+    <header className="sticky top-0 z-50 bg-white shadow-sm">
       <div className="container-custom">
         <nav className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-primary">Bir El</span>
+          <Link href="/" className="flex items-center">
+            <span className="text-2xl font-bold text-[#FFC107]">Bir El</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -30,13 +28,17 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-gray-900 hover:text-secondary transition-colors duration-200 ${
-                  pathname === item.href ? "font-medium text-secondary" : ""
-                }`}
+                className="text-gray-900 hover:text-[#FFC107] transition-colors duration-200"
               >
                 {item.name}
               </Link>
             ))}
+            <Link
+              href="/giris"
+              className="bg-[#0A2540] text-white px-6 py-2 rounded-lg hover:bg-[#0A2540]/90 transition-colors"
+            >
+              Giriş Yap / Üye Ol
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -62,7 +64,7 @@ export default function Header() {
         >
           <div className="flex flex-col h-full">
             <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100">
-              <span className="text-2xl font-bold text-primary">Bir El</span>
+              <span className="text-2xl font-bold text-[#FFC107]">Bir El</span>
               <button
                 type="button"
                 onClick={() => setIsMenuOpen(false)}
@@ -85,15 +87,22 @@ export default function Header() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className={`text-lg ${
-                        pathname === item.href ? "text-secondary font-medium" : "text-gray-600"
-                      }`}
+                      className="text-lg text-gray-900 hover:text-[#FFC107] transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {item.name}
                     </Link>
                   </li>
                 ))}
+                <li>
+                  <Link
+                    href="/giris"
+                    className="text-lg text-[#0A2540] font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Giriş Yap / Üye Ol
+                  </Link>
+                </li>
               </ul>
             </nav>
           </div>

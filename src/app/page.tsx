@@ -5,32 +5,26 @@ const CATEGORIES = [
   {
     title: "Ev İşleri",
     icon: "🏠",
-    description: "Temizlik, yemek, ütü gibi ev işlerinde yardım",
+    count: "+425",
+    description: "görev tamamlandı",
   },
   {
     title: "İlaç Alımı",
     icon: "💊",
-    description: "İlaç alımı ve teslimatı konusunda destek",
+    count: "+200",
+    description: "görev tamamlandı",
   },
   {
     title: "Paket Taşıma",
     icon: "📦",
-    description: "Ağır eşya ve paketlerin taşınmasında yardım",
-  },
-  {
-    title: "Teknik Destek",
-    icon: "💻",
-    description: "Bilgisayar ve telefon konularında teknik destek",
-  },
-  {
-    title: "Market Alışverişi",
-    icon: "🛒",
-    description: "Market alışverişi ve teslimatı",
+    count: "+390",
+    description: "görev tamamlandı",
   },
   {
     title: "Evcil Hayvan Bakımı",
     icon: "🐾",
-    description: "Evcil hayvanların bakımı ve gezdirilmesi",
+    count: "+105",
+    description: "görev tamamlandı",
   },
 ];
 
@@ -38,27 +32,29 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="py-12 md:py-20 bg-gradient-to-b from-[#fffaf0] to-white">
+      <section className="relative py-12 md:py-20">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                İhtiyacı olana yardım eli uzatın
+              <h1 className="text-4xl md:text-5xl font-bold text-[#0A2540] mb-6">
+                Zamana mı<br />
+                ihtiyacın var?<br />
+                Biz halledelim.
               </h1>
               <p className="text-lg text-gray-600 mb-8">
-                Bir El, yardıma ihtiyacı olanlarla gönüllüleri buluşturan bir platformdur.
-                Sen de katıl, birlikte daha güzel bir dünya inşa edelim.
+                Bir El, gündelik işleri senin için kolaylaştırır.<br />
+                Güvenli ve hızlı yardımlaşma platformu.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link 
                   href="/gorev-ver" 
-                  className="bg-[#facc15] hover:bg-[#eab308] text-gray-900 px-6 py-3 rounded-lg font-medium transition-colors"
+                  className="bg-[#FFC107] text-[#0A2540] px-6 py-3 rounded-lg font-medium hover:bg-[#FFC107]/90 transition-colors"
                 >
                   Görev Ver
                 </Link>
                 <Link 
                   href="/gorevli-ol"
-                  className="bg-[#facc15] hover:bg-[#eab308] text-gray-900 px-6 py-3 rounded-lg font-medium transition-colors"
+                  className="bg-white text-[#0A2540] px-6 py-3 rounded-lg font-medium border-2 border-[#0A2540] hover:bg-gray-50 transition-colors"
                 >
                   Görevli Ol
                 </Link>
@@ -78,24 +74,18 @@ export default function Home() {
       </section>
 
       {/* Categories Section */}
-      <section className="py-12 md:py-20 bg-white">
+      <section className="py-12 md:py-20 bg-gray-50">
         <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Hangi konuda destek arıyorsun?
-            </h2>
-            <p className="text-lg text-gray-600">
-              İhtiyacınıza göre uygun kategoriyi seçin, size yardımcı olalım.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {CATEGORIES.map((category) => (
-              <div key={category.title} className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
+              <div key={category.title} className="bg-white p-6 rounded-xl">
                 <div className="text-4xl mb-4">{category.icon}</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-xl font-semibold text-[#0A2540] mb-2">
                   {category.title}
                 </h3>
+                <div className="text-3xl font-bold text-[#0A2540] mb-1">
+                  {category.count}
+                </div>
                 <p className="text-gray-600">{category.description}</p>
               </div>
             ))}
