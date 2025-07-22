@@ -449,6 +449,11 @@ export default function GorevliKayit() {
             <button
               type="submit"
               disabled={loading}
+              onClick={(e) => {
+                e.preventDefault();
+                console.log('Button clicked');
+                handleSubmit(e);
+              }}
               className="w-full bg-[#1A1A1A] text-white py-3 rounded-lg hover:bg-[#333] transition-colors disabled:opacity-50"
             >
               {loading ? "Kaydediliyor..." : "Kayıt Ol"}

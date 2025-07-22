@@ -5,11 +5,31 @@ import dbConnect from '@/lib/dbConnect';
 import Gorevli from '@/models/Gorevli';
 
 export async function POST(req: Request) {
+  // CORS headers
+  if (req.method === 'OPTIONS') {
+    return new NextResponse(null, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Methods': 'POST',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    });
+  }
+
   try {
     console.log('API çağrısı başladı');
     await dbConnect();
+    
     const body = await req.json();
     console.log('Gelen veri:', body);
+
+    // Validasyon
+    if (!body.email || !body.password || !body.firstName || !body.lastName) {
+      return NextResponse.json(
+        { error: 'Tüm zorunlu alanları doldurun' },
+        { status: 400 }
+      );
+    }
 
     // E-posta kontrolü
     const existingUser = await Gorevli.findOne({ email: body.email });
