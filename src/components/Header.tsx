@@ -1,67 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
-
-// Auth durumunu global olarak dinlemek için custom event
-const AUTH_CHANGE_EVENT = 'authStateChanged';
-
-// Auth durumunu güncellemek için global fonksiyon
-export const updateAuthState = () => {
-  console.log('🔄 updateAuthState çağrıldı');
-  const event = new CustomEvent(AUTH_CHANGE_EVENT);
-  window.dispatchEvent(event);
-};
+import { useEffect } from "react";
+import { useAuthStore } from "@/store/authStore";
 
 export default function Header() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
-  const pathname = usePathname();
-
-  const checkAuthState = () => {
-    console.log('🔍 checkAuthState çağrıldı');
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('selectedRole');
-    console.log('📊 Mevcut durum:', { token, role });
-
-    if (token) {
-      console.log('✅ Token bulundu, auth true yapılıyor');
-      setIsAuthenticated(true);
-      setSelectedRole(role);
-    } else {
-      console.log('❌ Token bulunamadı, auth false yapılıyor');
-      setIsAuthenticated(false);
-      setSelectedRole(null);
-    }
-  };
+  const { isAuthenticated, selectedRole, checkAuth } = useAuthStore();
 
   useEffect(() => {
-    console.log('🎬 Header useEffect çalıştı');
-    
-    // İlk yüklemede kontrol et
-    checkAuthState();
-
-    // Auth değişikliklerini dinle
-    const handleAuthChange = () => {
-      console.log('👂 Auth change event alındı');
-      checkAuthState();
-    };
-
-    window.addEventListener(AUTH_CHANGE_EVENT, handleAuthChange);
-
-    return () => {
-      console.log('🔚 Header cleanup çalıştı');
-      window.removeEventListener(AUTH_CHANGE_EVENT, handleAuthChange);
-    };
-  }, []);
-
-  console.log('🎨 Header render:', { isAuthenticated, selectedRole });
+    // İlk yüklemede ve component mount olduğunda auth durumunu kontrol et
+    checkAuth();
+  }, [checkAuth]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('selectedRole');
-    updateAuthState();
+    checkAuth();
     window.location.href = '/';
   };
 

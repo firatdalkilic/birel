@@ -2,10 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { updateAuthState } from "@/components/Header";
+import { useAuthStore } from "@/store/authStore";
 
 export default function RoleSelectionPage() {
   const router = useRouter();
+  const { checkAuth } = useAuthStore();
 
   useEffect(() => {
     // Token kontrolü
@@ -17,12 +18,8 @@ export default function RoleSelectionPage() {
 
   const handleRoleSelect = (role: 'gorevveren' | 'gorevli') => {
     localStorage.setItem('selectedRole', role);
-    
-    // Auth state'i güncelle ve dashboard'a yönlendir
-    setTimeout(() => {
-      updateAuthState();
-      router.push(`/dashboard/${role}`);
-    }, 100);
+    checkAuth();
+    router.push(`/dashboard/${role}`);
   };
 
   return (

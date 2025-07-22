@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { updateAuthState } from "@/components/Header";
+import { useAuthStore } from "@/store/authStore";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { checkAuth } = useAuthStore();
+  
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -15,22 +17,20 @@ export default function LoginPage() {
     e.preventDefault();
     
     try {
-      console.log('📝 Giriş formu gönderiliyor');
-      
       // API çağrısı simülasyonu
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      console.log('🔑 Token kaydediliyor');
+      // Token'ı kaydet
       localStorage.setItem('token', 'dummy-token');
       
-      console.log('🔄 Auth state güncelleniyor');
-      updateAuthState();
+      // Global state'i güncelle
+      checkAuth();
       
-      console.log('🚀 Rol seçimine yönlendiriliyor');
+      // Rol seçimine yönlendir
       router.push('/rol-sec');
 
     } catch (error) {
-      console.error('❌ Giriş hatası:', error);
+      console.error('Giriş hatası:', error);
     }
   };
 
