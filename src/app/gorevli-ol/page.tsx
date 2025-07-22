@@ -104,6 +104,7 @@ export default function GorevliKayit() {
 
     setLoading(true);
     try {
+      console.log('Form gönderiliyor:', formData);
       const res = await fetch("/api/register-gorevli", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -111,6 +112,8 @@ export default function GorevliKayit() {
       });
 
       const data = await res.json();
+      console.log('API yanıtı:', data);
+
       if (!res.ok) throw new Error(data.error);
 
       // Token'ı localStorage'a kaydet
@@ -119,6 +122,7 @@ export default function GorevliKayit() {
       // Başarılı kayıt sonrası yönlendirme
       router.push("/dashboard");
     } catch (error: any) {
+      console.error('Kayıt hatası:', error);
       setErrors((prev) => ({ ...prev, submit: error.message }));
     } finally {
       setLoading(false);

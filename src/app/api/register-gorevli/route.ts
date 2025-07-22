@@ -6,12 +6,15 @@ import Gorevli from '@/models/Gorevli';
 
 export async function POST(req: Request) {
   try {
+    console.log('API çağrısı başladı');
     await dbConnect();
     const body = await req.json();
+    console.log('Gelen veri:', body);
 
     // E-posta kontrolü
     const existingUser = await Gorevli.findOne({ email: body.email });
     if (existingUser) {
+      console.log('E-posta zaten kullanımda:', body.email);
       return NextResponse.json(
         { error: 'Bu e-posta adresi zaten kullanımda' },
         { status: 400 }
@@ -28,6 +31,7 @@ export async function POST(req: Request) {
       passwordHash,
       role: 'gorevli',
     });
+    console.log('Yeni görevli oluşturuldu:', gorevli._id);
 
     // JWT token oluşturma
     const token = jwt.sign(
@@ -47,7 +51,7 @@ export async function POST(req: Request) {
       },
     });
   } catch (error: any) {
-    console.error('Kayıt hatası:', error);
+    console.error('API hatası:', error);
     return NextResponse.json(
       { error: error.message || 'Bir hata oluştu' },
       { status: 500 }
