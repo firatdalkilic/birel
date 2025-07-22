@@ -62,24 +62,25 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative py-12 md:py-20 min-h-[80vh]">
-        <div className="absolute inset-0 hidden md:block">
-          <Image
-            src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070&auto=format&fit=crop"
-            alt="Bir El - Yardımlaşma Platformu"
-            fill
-            className="object-cover object-center"
-            priority
-          />
-          <div 
-            className="absolute inset-0" 
-            style={{
-              backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0) 60%)'
-            }}
-          />
-        </div>
-        
+      <section className="relative py-12 md:py-20 min-h-[80vh] overflow-hidden">
+        {/* Desktop görünümü için container ve resim */}
         <div className="container-custom relative">
+          <div className="absolute right-0 top-0 w-[150%] md:w-[65%] h-full -z-10 hidden md:block">
+            <Image
+              src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070&auto=format&fit=crop"
+              alt="Bir El - Yardımlaşma Platformu"
+              fill
+              className="object-cover object-center"
+              priority
+            />
+            <div 
+              className="absolute inset-0" 
+              style={{
+                backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0) 60%)'
+              }}
+            />
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
             <div className="relative z-10">
               <h1 className="text-4xl md:text-5xl font-bold text-[#0A2540] mb-6">
