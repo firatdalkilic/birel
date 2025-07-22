@@ -36,9 +36,9 @@ const CATEGORIES = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#fffaf0] to-white">
+    <>
       {/* Hero Section */}
-      <section className="py-12 md:py-20">
+      <section className="py-12 md:py-20 bg-gradient-to-b from-[#fffaf0] to-white">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
@@ -102,6 +102,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </main>
+    </>
   );
 }
