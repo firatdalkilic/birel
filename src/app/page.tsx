@@ -32,7 +32,7 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative py-12 md:py-20">
+      <section className="relative py-12 md:py-20 bg-[#FCF6E6]">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
@@ -60,7 +60,8 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden">
+            <div className="relative h-[400px] md:h-[500px] overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#FCF6E6] via-[#FCF6E6]/50 to-transparent z-10" />
               <Image
                 src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070&auto=format&fit=crop"
                 alt="Bir El - Yardımlaşma Platformu"
