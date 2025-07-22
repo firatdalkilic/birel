@@ -88,16 +88,16 @@ export default function Home() {
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link 
-                  href="/gorev-ver" 
+                  href="/kayit" 
                   className="bg-[#FFC107] text-[#0A2540] px-8 py-4 rounded-lg font-medium hover:bg-[#FFC107]/90 transition-colors text-lg"
                 >
-                  Görev Ver
+                  Kayıt Ol
                 </Link>
                 <Link 
-                  href="/gorevli-ol"
+                  href="/giris"
                   className="bg-white text-[#0A2540] px-8 py-4 rounded-lg font-medium border-2 border-[#0A2540] hover:bg-gray-50 transition-colors text-lg"
                 >
-                  Görevli Ol
+                  Giriş Yap
                 </Link>
               </div>
             </div>
