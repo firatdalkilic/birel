@@ -3,19 +3,50 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+// Auth durumunu global olarak dinlemek için custom event
+const AUTH_CHANGE_EVENT = 'authStateChanged';
+
+// Auth durumunu güncellemek için global fonksiyon
+export const updateAuthState = () => {
+  const event = new CustomEvent(AUTH_CHANGE_EVENT);
+  window.dispatchEvent(event);
+};
+
 export default function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Token kontrolü
+  const checkAuthState = () => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsAuthenticated(true);
       const role = localStorage.getItem('selectedRole');
       setSelectedRole(role);
+    } else {
+      setIsAuthenticated(false);
+      setSelectedRole(null);
     }
+  };
+
+  useEffect(() => {
+    // İlk yüklemede kontrol et
+    checkAuthState();
+
+    // Auth değişikliklerini dinle
+    window.addEventListener(AUTH_CHANGE_EVENT, checkAuthState);
+
+    return () => {
+      window.removeEventListener(AUTH_CHANGE_EVENT, checkAuthState);
+    };
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('selectedRole');
+    setIsAuthenticated(false);
+    setSelectedRole(null);
+    window.location.href = '/';
+  };
 
   return (
     <header className="py-4 bg-white shadow-sm">
@@ -49,17 +80,16 @@ export default function Header() {
                   href={selectedRole === 'gorevveren' ? '/dashboard/gorevveren' : '/dashboard/gorevli'} 
                   className="text-gray-600 hover:text-gray-900"
                 >
-                  Dashboard
+                  Görevlerim
                 </Link>
                 <Link href="/profil" className="text-gray-600 hover:text-gray-900">
-                  Profil
+                  Profilim
+                </Link>
+                <Link href="/rol-sec" className="text-gray-600 hover:text-gray-900">
+                  Rol Değiştir
                 </Link>
                 <button
-                  onClick={() => {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('selectedRole');
-                    window.location.href = '/';
-                  }}
+                  onClick={handleLogout}
                   className="text-red-600 hover:text-red-700"
                 >
                   Çıkış Yap
