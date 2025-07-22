@@ -62,8 +62,19 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative py-12 md:py-20 bg-gradient-to-b from-[#fffaf0] to-white min-h-[80vh]">
-        <div className="container-custom">
+      <section className="relative py-12 md:py-20 min-h-[80vh]">
+        <div className="absolute inset-0 hidden md:block">
+          <Image
+            src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070&auto=format&fit=crop"
+            alt="Bir El - Yardımlaşma Platformu"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent" />
+        </div>
+        
+        <div className="container-custom relative">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
             <div className="relative z-10">
               <h1 className="text-4xl md:text-5xl font-bold text-[#0A2540] mb-6">
@@ -82,34 +93,25 @@ export default function Home() {
                 </Link>
                 <Link 
                   href="/giris"
-                  className="bg-white text-[#0A2540] px-8 py-4 rounded-lg font-medium border-2 border-[#0A2540] hover:bg-gray-50 transition-colors text-lg"
+                  className="bg-white text-[#0A2540] px-8 py-4 rounded-lg font-medium border-2 border-[#0A2540] hover:bg-gray-50 transition-colors text-lg shadow-sm"
                 >
                   Giriş Yap
                 </Link>
               </div>
             </div>
-            <div className="absolute top-0 right-0 w-1/2 h-full hidden md:block">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#FCF6E6]/60 via-[#FCF6E6]/40 to-transparent z-10" />
-              <Image
-                src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070&auto=format&fit=crop"
-                alt="Bir El - Yardımlaşma Platformu"
-                fill
-                className="object-cover object-center"
-                priority
-              />
-            </div>
-            {/* Mobil görünüm için resim */}
-            <div className="relative h-[400px] md:hidden w-full mt-8 rounded-2xl overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#FCF6E6]/60 via-[#FCF6E6]/40 to-transparent z-10" />
-              <Image
-                src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070&auto=format&fit=crop"
-                alt="Bir El - Yardımlaşma Platformu"
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
           </div>
+        </div>
+
+        {/* Mobil görünüm için resim */}
+        <div className="relative h-[400px] md:hidden w-full mt-8">
+          <Image
+            src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070&auto=format&fit=crop"
+            alt="Bir El - Yardımlaşma Platformu"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/40 to-transparent" />
         </div>
       </section>
 
