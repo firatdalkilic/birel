@@ -30,14 +30,28 @@ export default function Navbar() {
         });
       } catch (error) {
         console.error('Token çözümleme hatası:', error);
+        // Token hatalıysa temizle
+        handleLogout();
       }
     }
   }, []);
 
   const handleLogout = () => {
+    // State'i temizle
+    setUser(null);
+    
+    // Local storage'ı temizle
     localStorage.removeItem('token');
     localStorage.removeItem('selectedRole');
-    router.push('/giris');
+    
+    // Menüyü kapat (eğer açıksa)
+    setIsMenuOpen(false);
+    
+    // Ana sayfaya yönlendir
+    router.push('/');
+    
+    // Sayfayı yenile (opsiyonel, state'lerin tamamen temizlenmesi için)
+    router.refresh();
   };
 
   const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
@@ -77,7 +91,7 @@ export default function Navbar() {
                 </NavLink>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2 text-gray-700 hover:text-[#FFC107] transition-colors"
+                  className="flex items-center gap-2 text-gray-700 hover:text-red-500 transition-colors"
                 >
                   <FaSignOutAlt className="w-4 h-4" />
                   <span>Çıkış Yap</span>
@@ -142,7 +156,7 @@ export default function Navbar() {
                       </NavLink>
                       <button
                         onClick={handleLogout}
-                        className="flex items-center gap-2 text-gray-700 hover:text-[#FFC107] transition-colors"
+                        className="flex items-center gap-2 text-gray-700 hover:text-red-500 transition-colors"
                       >
                         <FaSignOutAlt className="w-4 h-4" />
                         <span>Çıkış Yap</span>
