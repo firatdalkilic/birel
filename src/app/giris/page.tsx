@@ -21,11 +21,12 @@ export default function LoginPage() {
       // Başarılı giriş simülasyonu
       localStorage.setItem('token', 'dummy-token');
       
-      // Auth state'i güncelle
-      updateAuthState();
-      
-      // Rol seçim sayfasına yönlendir
-      router.push('/rol-sec');
+      // Auth state'i güncelle ve rol seçimine yönlendir
+      setTimeout(() => {
+        updateAuthState();
+        router.push('/rol-sec');
+      }, 100);
+
     } catch (error) {
       console.error('Giriş hatası:', error);
     }

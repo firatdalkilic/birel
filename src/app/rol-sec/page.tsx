@@ -1,15 +1,28 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { updateAuthState } from "@/components/Header";
 
 export default function RoleSelectionPage() {
   const router = useRouter();
 
+  useEffect(() => {
+    // Token kontrolü
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/giris');
+    }
+  }, [router]);
+
   const handleRoleSelect = (role: 'gorevveren' | 'gorevli') => {
     localStorage.setItem('selectedRole', role);
-    updateAuthState();
-    router.push(`/dashboard/${role}`);
+    
+    // Auth state'i güncelle ve dashboard'a yönlendir
+    setTimeout(() => {
+      updateAuthState();
+      router.push(`/dashboard/${role}`);
+    }, 100);
   };
 
   return (
