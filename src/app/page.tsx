@@ -66,7 +66,7 @@ export default function Home() {
             </div>
             <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden">
               <Image
-                src="/hero-image.jpg"
+                src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070&auto=format&fit=crop"
                 alt="Bir El - Yardımlaşma Platformu"
                 fill
                 className="object-cover"
