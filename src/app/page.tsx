@@ -62,67 +62,46 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative py-12 md:py-20 min-h-[80vh] overflow-hidden">
-        {/* Desktop görünümü için container ve resim */}
-        <div className="container-custom relative">
-          <div className="absolute right-0 top-0 w-[150%] md:w-[65%] h-full -z-10 hidden md:block">
-            <Image
-              src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070&auto=format&fit=crop"
-              alt="Bir El - Yardımlaşma Platformu"
-              fill
-              className="object-cover object-center"
-              priority
-            />
-            <div 
-              className="absolute inset-0" 
-              style={{
-                backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0) 60%)'
-              }}
-            />
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
-            <div className="relative z-10">
-              <h1 className="text-4xl md:text-5xl font-bold text-[#0A2540] mb-6">
-                İhtiyacı olana yardım eli uzatın
-              </h1>
-              <p className="text-lg text-gray-600 mb-8">
-                Bir El, yardıma ihtiyacı olanlarla gönüllüleri buluşturan bir platformdur.
-                Sen de katıl, birlikte daha güzel bir dünya inşa edelim.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Link 
-                  href="/kayit"
-                  className="bg-[#FFC107] text-[#0A2540] px-8 py-4 rounded-lg font-medium hover:bg-[#FFB000] transition-colors text-lg"
-                >
-                  Kayıt Ol
-                </Link>
-                <Link 
-                  href="/giris"
-                  className="bg-white text-[#0A2540] px-8 py-4 rounded-lg font-medium border-2 border-[#0A2540] hover:bg-gray-50 transition-colors text-lg shadow-sm"
-                >
-                  Giriş Yap
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobil görünüm için resim */}
-        <div className="relative h-[400px] md:hidden w-full mt-8">
+      <section className="relative min-h-[80vh] bg-[#FCF6E6] overflow-hidden">
+        <div className="absolute inset-0 w-full h-full">
           <Image
             src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070&auto=format&fit=crop"
             alt="Bir El - Yardımlaşma Platformu"
             fill
-            className="object-cover"
+            className="object-cover object-center"
             priority
           />
-          <div 
-            className="absolute inset-0"
-            style={{
-              backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0) 60%)'
-            }}
-          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#FCF6E6] via-[#FCF6E6]/95 to-transparent" />
+        </div>
+        
+        <div className="container-custom relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 min-h-[80vh] items-center">
+            <div className="py-12 md:py-20 pr-4 md:pr-12">
+              <h1 className="text-5xl md:text-6xl font-bold text-[#0A2540] mb-8">
+                Zamana mı<br />
+                ihtiyacın var?<br />
+                Biz halledelim.
+              </h1>
+              <p className="text-xl text-gray-600 mb-10">
+                Bir El, gündelik işleri senin için kolaylaştırır.<br />
+                Güvenli ve hızlı yardımlaşma platformu.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Link 
+                  href="/gorev-ver" 
+                  className="bg-[#FFC107] text-[#0A2540] px-8 py-4 rounded-lg font-medium hover:bg-[#FFC107]/90 transition-colors text-lg"
+                >
+                  Görev Ver
+                </Link>
+                <Link 
+                  href="/gorevli-ol"
+                  className="bg-white text-[#0A2540] px-8 py-4 rounded-lg font-medium border-2 border-[#0A2540] hover:bg-gray-50 transition-colors text-lg"
+                >
+                  Görevli Ol
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
