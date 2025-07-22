@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
+import { FaTasks, FaUserCircle } from "react-icons/fa";
+import { MdSwapHoriz } from "react-icons/md";
+import { IoLogOutOutline } from "react-icons/io5";
 
 export default function Header() {
   const { isAuthenticated, selectedRole, checkAuth, logout } = useAuthStore();
@@ -54,21 +57,31 @@ export default function Header() {
               <>
                 <Link 
                   href={selectedRole === 'gorevveren' ? '/dashboard/gorevveren' : '/dashboard/gorevli'} 
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
                 >
-                  Görevlerim
+                  <FaTasks className="text-lg" />
+                  <span>Görevlerim</span>
                 </Link>
-                <Link href="/profil" className="text-gray-600 hover:text-gray-900">
-                  Profilim
+                <Link 
+                  href="/profil" 
+                  className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
+                >
+                  <FaUserCircle className="text-lg" />
+                  <span>Profilim</span>
                 </Link>
-                <Link href="/rol-sec" className="text-gray-600 hover:text-gray-900">
-                  Rol Değiştir
+                <Link 
+                  href="/rol-sec" 
+                  className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
+                >
+                  <MdSwapHoriz className="text-lg" />
+                  <span>Rol Değiştir</span>
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-red-600 hover:text-red-700"
+                  className="text-red-600 hover:text-red-700 flex items-center gap-2"
                 >
-                  Çıkış Yap
+                  <IoLogOutOutline className="text-lg" />
+                  <span>Çıkış Yap</span>
                 </button>
               </>
             )}
