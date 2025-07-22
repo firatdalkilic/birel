@@ -2,24 +2,25 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-footer-bg">
+    <footer className="bg-gray-900 text-gray-50">
       <div className="container-custom py-8 md:py-12">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-primary">Bir El</span>
-          </Link>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+          {/* Logo & Copyright */}
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-bold text-primary">Bir El</span>
+            <span className="text-gray-400">© 2025</span>
+          </div>
 
           {/* Links */}
-          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
-            <span className="text-text-body">
-              © {new Date().getFullYear()} Bir El
-            </span>
-            <Link href="/kvkk" className="footer-link">
+          <div className="flex flex-wrap justify-center gap-6">
+            <Link href="/gizlilik" className="text-gray-300 hover:text-white transition-colors">
+              Gizlilik Politikası
+            </Link>
+            <Link href="/kvkk" className="text-gray-300 hover:text-white transition-colors">
               KVKK
             </Link>
-            <Link href="/gizlilik" className="footer-link">
-              Gizlilik Politikası
+            <Link href="/kullanim-sartlari" className="text-gray-300 hover:text-white transition-colors">
+              Kullanım Şartları
             </Link>
           </div>
 
@@ -29,7 +30,7 @@ export default function Footer() {
               href="https://instagram.com/birelapp"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-text-body hover:text-secondary transition-colors"
+              className="text-gray-400 hover:text-white transition-colors"
               aria-label="Instagram"
             >
               <svg
@@ -49,7 +50,7 @@ export default function Footer() {
               href="https://twitter.com/birelapp"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-text-body hover:text-secondary transition-colors"
+              className="text-gray-400 hover:text-white transition-colors"
               aria-label="Twitter"
             >
               <svg

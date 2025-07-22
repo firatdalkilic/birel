@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAVIGATION = [
-  { name: "Anasayfa", href: "/" },
+  { name: "Ana Sayfa", href: "/" },
   { name: "Görev Ver", href: "/gorev-ver" },
   { name: "Görevli Ol", href: "/gorevli-ol" },
-  { name: "SSS", href: "/sss" },
+  { name: "Hakkımızda", href: "/hakkimizda" },
   { name: "İletişim", href: "/iletisim" },
 ];
 
@@ -30,7 +30,9 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`nav-link ${pathname === item.href ? "nav-link-active" : ""}`}
+                className={`text-gray-900 hover:text-secondary transition-colors duration-200 ${
+                  pathname === item.href ? "font-medium text-secondary" : ""
+                }`}
               >
                 {item.name}
               </Link>
@@ -40,7 +42,7 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <button
             type="button"
-            className="md:hidden"
+            className="md:hidden p-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -84,7 +86,7 @@ export default function Header() {
                     <Link
                       href={item.href}
                       className={`text-lg ${
-                        pathname === item.href ? "text-primary font-medium" : "text-gray-600"
+                        pathname === item.href ? "text-secondary font-medium" : "text-gray-600"
                       }`}
                       onClick={() => setIsMenuOpen(false)}
                     >
