@@ -1,229 +1,442 @@
 "use client";
-import { useState } from "react";
 
-const GOREV_TURLERI = [
-  "Dış görev (kargo, teslimat)",
-  "Eczane / sağlık",
-  "Evrak / resmi işler",
-  "Dijital işler",
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+const TASK_TYPES = [
+  "Ev işleri",
+  "İlaç alımı",
+  "Paket taşıma",
+  "Çocuk bakımı",
+  "Bahçe işleri",
 ];
 
-export default function GorevliOl() {
-  const [form, setForm] = useState({
-    adSoyad: "",
-    telefon: "",
-    sehirIlce: "",
-    gorevTurleri: [] as string[],
-    uygunSaat: "",
-    referans: "",
-    kvkkOnayi: false,
-  });
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState("");
-  const [showTooltip, setShowTooltip] = useState(false);
+const DAYS = [
+  "Pazartesi",
+  "Salı",
+  "Çarşamba",
+  "Perşembe",
+  "Cuma",
+  "Cumartesi",
+  "Pazar",
+];
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    if (type === "checkbox" && name === "gorevTurleri") {
-      const val = value;
-      setForm((prev) => ({
-        ...prev,
-        gorevTurleri: prev.gorevTurleri.includes(val)
-          ? prev.gorevTurleri.filter((v) => v !== val)
-          : [...prev.gorevTurleri, val],
-      }));
-    } else if (type === "checkbox") {
-      setForm((prev) => ({
-        ...prev,
-        [name]: (e.target as HTMLInputElement).checked,
-      }));
+const CITIES = ["İstanbul", "Ankara", "İzmir"]; // Örnek şehirler
+const DISTRICTS = {
+  İstanbul: ["Kadıköy", "Beşiktaş", "Üsküdar"], // Örnek ilçeler
+  Ankara: ["Çankaya", "Keçiören", "Mamak"],
+  İzmir: ["Konak", "Karşıyaka", "Bornova"],
+};
+
+export default function GorevliKayit() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [selectedCity, setSelectedCity] = useState("");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    password: "",
+    passwordConfirm: "",
+    city: "",
+    district: "",
+    tasks: [] as string[],
+    transportation: "",
+    availability: [] as string[],
+    about: "",
+    avatar: "",
+    kvkkAccepted: false,
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, checked } = e.target;
+    if (name === "kvkkAccepted") {
+      setFormData((prev) => ({ ...prev, [name]: checked }));
     } else {
-      setForm((prev) => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: value,
+        [name]: checked
+          ? [...(prev[name as "tasks" | "availability"] || []), value]
+          : (prev[name as "tasks" | "availability"] || []).filter((item) => item !== value),
       }));
     }
   };
 
+  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const city = e.target.value;
+    setSelectedCity(city);
+    setFormData((prev) => ({ ...prev, city, district: "" }));
+  };
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.firstName) newErrors.firstName = "Ad alanı zorunludur";
+    if (!formData.lastName) newErrors.lastName = "Soyad alanı zorunludur";
+    if (!formData.email) newErrors.email = "E-posta alanı zorunludur";
+    if (!formData.phone) newErrors.phone = "Telefon numarası zorunludur";
+    if (!formData.password) newErrors.password = "Şifre zorunludur";
+    if (formData.password.length < 8) newErrors.password = "Şifre en az 8 karakter olmalıdır";
+    if (formData.password !== formData.passwordConfirm) newErrors.passwordConfirm = "Şifreler eşleşmiyor";
+    if (!formData.city) newErrors.city = "Şehir seçimi zorunludur";
+    if (!formData.district) newErrors.district = "İlçe seçimi zorunludur";
+    if (!formData.tasks.length) newErrors.tasks = "En az bir görev türü seçmelisiniz";
+    if (!formData.transportation) newErrors.transportation = "Ulaşım durumu seçimi zorunludur";
+    if (!formData.availability.length) newErrors.availability = "En az bir gün seçmelisiniz";
+    if (!formData.kvkkAccepted) newErrors.kvkkAccepted = "KVKK metnini onaylamalısınız";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setSuccess(false);
-    if (!form.adSoyad || !form.telefon || !form.sehirIlce || form.gorevTurleri.length === 0 || !form.uygunSaat || !form.kvkkOnayi) {
-      setError("Lütfen tüm zorunlu alanları doldurun ve KVKK onayını kabul edin.");
-      return;
-    }
+    if (!validateForm()) return;
+
     setLoading(true);
     try {
-      const res = await fetch("/api/gorevli-ekle", {
+      const res = await fetch("/api/register-gorevli", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(formData),
       });
+
       const data = await res.json();
-      if (data.success) {
-        setSuccess(true);
-        setForm({
-          adSoyad: "",
-          telefon: "",
-          sehirIlce: "",
-          gorevTurleri: [],
-          uygunSaat: "",
-          referans: "",
-          kvkkOnayi: false,
-        });
-      } else {
-        setError(data.error || "Bir hata oluştu.");
-      }
-    } catch {
-      setError("Bir hata oluştu.");
+      if (!res.ok) throw new Error(data.error);
+
+      // Token'ı localStorage'a kaydet
+      localStorage.setItem("token", data.token);
+      
+      // Başarılı kayıt sonrası yönlendirme
+      router.push("/dashboard");
+    } catch (error: any) {
+      setErrors((prev) => ({ ...prev, submit: error.message }));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="flex-1 flex flex-col items-center justify-center py-8 px-2 bg-[#FAFAFA]">
-      <div className="w-full max-w-5xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8">
-        {/* Form Section */}
-        <section className="w-full lg:w-3/5 bg-white shadow-lg p-8 rounded-2xl">
-          <h2 className="text-3xl font-bold text-yellow-500 mb-3 font-sans tracking-wide text-center lg:text-left">Görevli Ol</h2>
-          <p className="text-gray-600 mb-6 text-lg text-center lg:text-left">Yardım etmeye hazır mısın? Hemen başvurunu yap.</p>
-          
-          <form className="space-y-5" onSubmit={handleSubmit} autoComplete="off">
-            <div>
-              <label className="block text-gray-700 font-medium mb-2" htmlFor="adSoyad">Ad Soyad *</label>
-              <input
-                type="text"
-                id="adSoyad"
-                name="adSoyad"
-                value={form.adSoyad}
-                onChange={handleChange}
-                required
-                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50 transition duration-200"
-              />
+    <div className="min-h-screen bg-[#F9FAFB] py-12">
+      <div className="container-custom">
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          <Link href="/" className="text-2xl font-bold text-[#FFBE3F]">
+            Bir El
+          </Link>
+        </div>
+
+        {/* Form Container */}
+        <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-sm p-8">
+          <h1 className="text-3xl font-bold text-[#333] mb-8 text-center">
+            Görevli olarak kayıt ol
+          </h1>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Kişisel Bilgiler */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-[#4A4A4A] mb-2">
+                  Ad
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFBE3F] focus:border-transparent"
+                />
+                {errors.firstName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#4A4A4A] mb-2">
+                  Soyad
+                </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFBE3F] focus:border-transparent"
+                />
+                {errors.lastName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
+                )}
+              </div>
             </div>
-            <div>
-              <label className="block text-gray-700 font-medium mb-2" htmlFor="telefon">Telefon *</label>
-              <input
-                type="tel"
-                id="telefon"
-                name="telefon"
-                value={form.telefon}
-                onChange={handleChange}
-                required
-                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50 transition duration-200"
-              />
+
+            {/* İletişim Bilgileri */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-[#4A4A4A] mb-2">
+                  E-posta
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFBE3F] focus:border-transparent"
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#4A4A4A] mb-2">
+                  Telefon Numarası
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="+90"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFBE3F] focus:border-transparent"
+                />
+                {errors.phone && (
+                  <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+                )}
+              </div>
             </div>
-            <div>
-              <label className="block text-gray-700 font-medium mb-2" htmlFor="sehirIlce">Şehir / İlçe *</label>
-              <input
-                type="text"
-                id="sehirIlce"
-                name="sehirIlce"
-                value={form.sehirIlce}
-                onChange={handleChange}
-                required
-                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50 transition duration-200"
-              />
+
+            {/* Şifre */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-[#4A4A4A] mb-2">
+                  Şifre
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFBE3F] focus:border-transparent"
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#4A4A4A] mb-2">
+                  Şifre Tekrar
+                </label>
+                <input
+                  type="password"
+                  name="passwordConfirm"
+                  value={formData.passwordConfirm}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFBE3F] focus:border-transparent"
+                />
+                {errors.passwordConfirm && (
+                  <p className="text-red-500 text-sm mt-1">{errors.passwordConfirm}</p>
+                )}
+              </div>
             </div>
+
+            {/* Lokasyon */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-[#4A4A4A] mb-2">
+                  Şehir
+                </label>
+                <select
+                  name="city"
+                  value={formData.city}
+                  onChange={handleCityChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFBE3F] focus:border-transparent"
+                >
+                  <option value="">Seçiniz</option>
+                  {CITIES.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
+                </select>
+                {errors.city && (
+                  <p className="text-red-500 text-sm mt-1">{errors.city}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#4A4A4A] mb-2">
+                  İlçe
+                </label>
+                <select
+                  name="district"
+                  value={formData.district}
+                  onChange={handleInputChange}
+                  disabled={!selectedCity}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFBE3F] focus:border-transparent"
+                >
+                  <option value="">Seçiniz</option>
+                  {selectedCity &&
+                    DISTRICTS[selectedCity as keyof typeof DISTRICTS].map((district) => (
+                      <option key={district} value={district}>
+                        {district}
+                      </option>
+                    ))}
+                </select>
+                {errors.district && (
+                  <p className="text-red-500 text-sm mt-1">{errors.district}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Görev Türleri */}
             <div>
-              <span className="block text-gray-700 font-medium mb-3">Yapabileceği Görev Türleri *</span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-gray-50 p-4 rounded-xl">
-                {GOREV_TURLERI.map((tur) => (
-                  <label key={tur} className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <label className="block text-sm font-medium text-[#4A4A4A] mb-2">
+                Yapabileceğin Görevler
+              </label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {TASK_TYPES.map((task) => (
+                  <label key={task} className="flex items-center space-x-2">
                     <input
                       type="checkbox"
-                      name="gorevTurleri"
-                      value={tur}
-                      checked={form.gorevTurleri.includes(tur)}
-                      onChange={handleChange}
-                      className="accent-yellow-400 w-5 h-5 cursor-pointer"
+                      name="tasks"
+                      value={task}
+                      checked={formData.tasks.includes(task)}
+                      onChange={handleCheckboxChange}
+                      className="rounded border-gray-300 text-[#FFBE3F] focus:ring-[#FFBE3F]"
                     />
-                    <span className="text-gray-700">{tur}</span>
+                    <span className="text-sm text-[#4A4A4A]">{task}</span>
                   </label>
                 ))}
               </div>
+              {errors.tasks && (
+                <p className="text-red-500 text-sm mt-1">{errors.tasks}</p>
+              )}
             </div>
+
+            {/* Ulaşım */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2" htmlFor="uygunSaat">Uygun Saat Bilgisi *</label>
-              <input
-                type="text"
-                id="uygunSaat"
-                name="uygunSaat"
-                value={form.uygunSaat}
-                onChange={handleChange}
-                required
-                placeholder="Örn: Hafta içi 18:00 sonrası"
-                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50 transition duration-200"
-              />
-            </div>
-            <div className="relative">
-              <div className="flex items-center gap-2 mb-2">
-                <label className="block text-gray-700 font-medium" htmlFor="referans">Referans (isteğe bağlı)</label>
-                <button
-                  type="button"
-                  className="text-gray-400 hover:text-gray-600"
-                  onMouseEnter={() => setShowTooltip(true)}
-                  onMouseLeave={() => setShowTooltip(false)}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </button>
-                {showTooltip && (
-                  <div className="absolute top-0 left-40 bg-gray-800 text-white text-sm py-1 px-2 rounded shadow-lg z-10">
-                    Varsa, daha hızlı değerlendirmeniz için yardımcı olabilir.
-                  </div>
-                )}
+              <label className="block text-sm font-medium text-[#4A4A4A] mb-2">
+                Ulaşım Durumu
+              </label>
+              <div className="space-x-6">
+                {["Kendi aracı var", "Yaya"].map((type) => (
+                  <label key={type} className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="transportation"
+                      value={type}
+                      checked={formData.transportation === type}
+                      onChange={handleInputChange}
+                      className="text-[#FFBE3F] focus:ring-[#FFBE3F]"
+                    />
+                    <span className="ml-2 text-sm text-[#4A4A4A]">{type}</span>
+                  </label>
+                ))}
               </div>
-              <input
-                type="text"
-                id="referans"
-                name="referans"
-                value={form.referans}
-                onChange={handleChange}
-                placeholder="Varsa belirtiniz"
-                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-50 transition duration-200"
-              />
+              {errors.transportation && (
+                <p className="text-red-500 text-sm mt-1">{errors.transportation}</p>
+              )}
             </div>
-            <div className="flex items-center gap-2">
+
+            {/* Müsait Günler */}
+            <div>
+              <label className="block text-sm font-medium text-[#4A4A4A] mb-2">
+                Müsait Günler
+              </label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {DAYS.map((day) => (
+                  <label key={day} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      name="availability"
+                      value={day}
+                      checked={formData.availability.includes(day)}
+                      onChange={handleCheckboxChange}
+                      className="rounded border-gray-300 text-[#FFBE3F] focus:ring-[#FFBE3F]"
+                    />
+                    <span className="text-sm text-[#4A4A4A]">{day}</span>
+                  </label>
+                ))}
+              </div>
+              {errors.availability && (
+                <p className="text-red-500 text-sm mt-1">{errors.availability}</p>
+              )}
+            </div>
+
+            {/* Açıklama */}
+            <div>
+              <label className="block text-sm font-medium text-[#4A4A4A] mb-2">
+                Kısa Açıklama
+              </label>
+              <textarea
+                name="about"
+                value={formData.about}
+                onChange={handleInputChange}
+                maxLength={300}
+                rows={4}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFBE3F] focus:border-transparent"
+                placeholder="Kendinizi kısaca tanıtın..."
+              />
+              <p className="text-sm text-gray-500 mt-1">
+                {formData.about.length}/300 karakter
+              </p>
+            </div>
+
+            {/* KVKK */}
+            <div className="flex items-start space-x-2">
               <input
                 type="checkbox"
-                id="kvkkOnayi"
-                name="kvkkOnayi"
-                checked={form.kvkkOnayi}
-                onChange={handleChange}
-                required
-                className="accent-yellow-400 w-5 h-5 cursor-pointer"
+                name="kvkkAccepted"
+                checked={formData.kvkkAccepted}
+                onChange={handleCheckboxChange}
+                className="mt-1 rounded border-gray-300 text-[#FFBE3F] focus:ring-[#FFBE3F]"
               />
-              <label htmlFor="kvkkOnayi" className="text-sm text-gray-600">KVKK onayını kabul ediyorum. *</label>
+              <label className="text-sm text-[#4A4A4A]">
+                <Link href="/kvkk" className="text-[#FFBE3F] hover:underline">
+                  KVKK metnini
+                </Link>{" "}
+                okudum ve onaylıyorum
+              </label>
             </div>
-            {error && <div className="text-red-600 text-sm">{error}</div>}
-            {success && <div className="text-green-600 text-sm">Başvurunuz başarıyla iletildi!</div>}
+            {errors.kvkkAccepted && (
+              <p className="text-red-500 text-sm">{errors.kvkkAccepted}</p>
+            )}
+
+            {/* Genel Hata */}
+            {errors.submit && (
+              <div className="bg-red-50 p-4 rounded-lg">
+                <p className="text-red-500 text-sm">{errors.submit}</p>
+              </div>
+            )}
+
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full min-h-[48px] bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-2 px-6 rounded-xl shadow-md transition duration-200 text-lg cursor-pointer hover:scale-105 hover:shadow-lg disabled:opacity-60"
+              className="w-full bg-[#1A1A1A] text-white py-3 rounded-lg hover:bg-[#333] transition-colors disabled:opacity-50"
             >
-              {loading ? "Gönderiliyor..." : "Başvuruyu İlet"}
+              {loading ? "Kaydediliyor..." : "Kayıt Ol"}
             </button>
-          </form>
-        </section>
 
-        {/* Illustration Section */}
-        <div className="hidden lg:flex lg:w-2/5 justify-center items-start">
-          <svg className="w-96 h-96" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Placeholder Delivery Character SVG */}
-            <circle cx="100" cy="60" r="40" fill="#FFC700" />
-            <rect x="70" y="100" width="60" height="80" fill="#FFE066" />
-            <path d="M60 140L140 140" stroke="#FFCC00" strokeWidth="4" strokeLinecap="round" />
-            <rect x="85" y="110" width="30" height="20" fill="#FFD700" />
-            <path d="M70 180L130 180" stroke="#FFCC00" strokeWidth="4" strokeLinecap="round" />
-          </svg>
+            {/* Login Link */}
+            <p className="text-center text-sm text-[#4A4A4A]">
+              Zaten üye misin?{" "}
+              <Link href="/giris" className="text-[#FFBE3F] hover:underline">
+                Giriş yap
+              </Link>
+            </p>
+          </form>
         </div>
       </div>
-    </main>
+    </div>
   );
 } 
