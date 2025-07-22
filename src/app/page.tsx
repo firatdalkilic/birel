@@ -89,7 +89,7 @@ export default function Home() {
               </div>
             </div>
             <div className="absolute top-0 right-0 w-1/2 h-full hidden md:block">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#FCF6E6] via-[#FCF6E6]/80 to-transparent z-10" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#FCF6E6]/60 via-[#FCF6E6]/40 to-transparent z-10" />
               <Image
                 src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070&auto=format&fit=crop"
                 alt="Bir El - Yardımlaşma Platformu"
@@ -100,7 +100,7 @@ export default function Home() {
             </div>
             {/* Mobil görünüm için resim */}
             <div className="relative h-[400px] md:hidden w-full mt-8 rounded-2xl overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#FCF6E6] via-[#FCF6E6]/50 to-transparent z-10" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#FCF6E6]/60 via-[#FCF6E6]/40 to-transparent z-10" />
               <Image
                 src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070&auto=format&fit=crop"
                 alt="Bir El - Yardımlaşma Platformu"
