@@ -15,20 +15,22 @@ export default function LoginPage() {
     e.preventDefault();
     
     try {
+      console.log('📝 Giriş formu gönderiliyor');
+      
       // API çağrısı simülasyonu
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Başarılı giriş simülasyonu
+      console.log('🔑 Token kaydediliyor');
       localStorage.setItem('token', 'dummy-token');
       
-      // Auth state'i güncelle ve rol seçimine yönlendir
-      setTimeout(() => {
-        updateAuthState();
-        router.push('/rol-sec');
-      }, 100);
+      console.log('🔄 Auth state güncelleniyor');
+      updateAuthState();
+      
+      console.log('🚀 Rol seçimine yönlendiriliyor');
+      router.push('/rol-sec');
 
     } catch (error) {
-      console.error('Giriş hatası:', error);
+      console.error('❌ Giriş hatası:', error);
     }
   };
 

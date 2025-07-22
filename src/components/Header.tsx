@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 // Auth durumunu global olarak dinlemek için custom event
 const AUTH_CHANGE_EVENT = 'authStateChanged';
 
 // Auth durumunu güncellemek için global fonksiyon
 export const updateAuthState = () => {
+  console.log('🔄 updateAuthState çağrıldı');
   const event = new CustomEvent(AUTH_CHANGE_EVENT);
   window.dispatchEvent(event);
 };
@@ -15,36 +17,51 @@ export const updateAuthState = () => {
 export default function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const pathname = usePathname();
 
   const checkAuthState = () => {
+    console.log('🔍 checkAuthState çağrıldı');
     const token = localStorage.getItem('token');
+    const role = localStorage.getItem('selectedRole');
+    console.log('📊 Mevcut durum:', { token, role });
+
     if (token) {
+      console.log('✅ Token bulundu, auth true yapılıyor');
       setIsAuthenticated(true);
-      const role = localStorage.getItem('selectedRole');
       setSelectedRole(role);
     } else {
+      console.log('❌ Token bulunamadı, auth false yapılıyor');
       setIsAuthenticated(false);
       setSelectedRole(null);
     }
   };
 
   useEffect(() => {
+    console.log('🎬 Header useEffect çalıştı');
+    
     // İlk yüklemede kontrol et
     checkAuthState();
 
     // Auth değişikliklerini dinle
-    window.addEventListener(AUTH_CHANGE_EVENT, checkAuthState);
+    const handleAuthChange = () => {
+      console.log('👂 Auth change event alındı');
+      checkAuthState();
+    };
+
+    window.addEventListener(AUTH_CHANGE_EVENT, handleAuthChange);
 
     return () => {
-      window.removeEventListener(AUTH_CHANGE_EVENT, checkAuthState);
+      console.log('🔚 Header cleanup çalıştı');
+      window.removeEventListener(AUTH_CHANGE_EVENT, handleAuthChange);
     };
   }, []);
+
+  console.log('🎨 Header render:', { isAuthenticated, selectedRole });
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('selectedRole');
-    setIsAuthenticated(false);
-    setSelectedRole(null);
+    updateAuthState();
     window.location.href = '/';
   };
 
