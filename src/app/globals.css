@@ -4,6 +4,62 @@
 
 @layer base {
   body {
-    @apply bg-background text-secondary;
+    @apply text-text-body bg-gradient-to-b from-background-light to-background-white min-h-screen;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .nav-link {
+    @apply text-text-dark hover:text-secondary transition-colors duration-200;
+  }
+
+  .nav-link-active {
+    @apply text-secondary font-medium;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-text-dark hover:bg-text-dark hover:text-primary transition-colors duration-200 px-6 py-2 rounded-lg font-medium;
+  }
+
+  .footer-link {
+    @apply text-text-body hover:text-secondary transition-colors duration-200;
+  }
+
+  .footer-divider {
+    @apply text-gray-300;
+  }
+
+  .hamburger-top,
+  .hamburger-middle,
+  .hamburger-bottom {
+    @apply w-6 h-0.5 bg-text-dark transition-all duration-200;
+  }
+
+  .hamburger-middle {
+    @apply opacity-100;
+  }
+
+  .hamburger-active.hamburger-top {
+    @apply rotate-45 translate-y-2;
+  }
+
+  .hamburger-active.hamburger-middle {
+    @apply opacity-0;
+  }
+
+  .hamburger-active.hamburger-bottom {
+    @apply -rotate-45 -translate-y-2;
+  }
+
+  .category-card {
+    @apply bg-white p-6 rounded-xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer border border-gray-100;
+  }
+
+  .category-card:hover {
+    @apply shadow-primary/20;
   }
 }
