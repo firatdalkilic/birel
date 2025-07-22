@@ -5,19 +5,24 @@ import { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
 
 export default function Header() {
-  const { isAuthenticated, selectedRole, checkAuth } = useAuthStore();
+  const { isAuthenticated, selectedRole, checkAuth, logout } = useAuthStore();
 
   useEffect(() => {
-    // İlk yüklemede ve component mount olduğunda auth durumunu kontrol et
-    checkAuth();
+    // Client-side'da auth durumunu kontrol et
+    if (typeof window !== 'undefined') {
+      checkAuth();
+    }
   }, [checkAuth]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('selectedRole');
-    checkAuth();
+    logout();
     window.location.href = '/';
   };
+
+  // Server-side rendering sırasında auth durumunu gösterme
+  if (typeof window === 'undefined') {
+    return null;
+  }
 
   return (
     <header className="py-4 bg-white shadow-sm">

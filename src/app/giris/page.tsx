@@ -6,7 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { checkAuth } = useAuthStore();
+  const { setAuth } = useAuthStore();
   
   const [formData, setFormData] = useState({
     email: "",
@@ -20,11 +20,9 @@ export default function LoginPage() {
       // API çağrısı simülasyonu
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Token'ı kaydet
+      // Token'ı kaydet ve auth state'i güncelle
       localStorage.setItem('token', 'dummy-token');
-      
-      // Global state'i güncelle
-      checkAuth();
+      setAuth(true);
       
       // Rol seçimine yönlendir
       router.push('/rol-sec');
