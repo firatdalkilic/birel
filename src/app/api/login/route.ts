@@ -2,15 +2,26 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dbConnect from '@/lib/dbConnect';
-import Gorevli from '@/models/Gorevli';
+import User from '@/models/User';
 
 export async function POST(req: Request) {
+  // CORS headers
+  if (req.method === 'OPTIONS') {
+    return new NextResponse(null, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Methods': 'POST',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    });
+  }
+
   try {
-    console.log('Login API çağrısı başladı');
+    console.log('Giriş API çağrısı başladı');
     await dbConnect();
     
     const body = await req.json();
-    console.log('Gelen veri:', { email: body.email });
+    console.log('Gelen veri:', { ...body, password: '[GİZLENDİ]' });
 
     // Validasyon
     if (!body.email || !body.password) {
@@ -21,11 +32,11 @@ export async function POST(req: Request) {
     }
 
     // Kullanıcıyı bul
-    const user = await Gorevli.findOne({ email: body.email });
+    const user = await User.findOne({ email: body.email });
     if (!user) {
       console.log('Kullanıcı bulunamadı:', body.email);
       return NextResponse.json(
-        { error: 'E-posta veya şifre hatalı. Lütfen tekrar deneyin.' },
+        { error: 'E-posta veya şifre hatalı' },
         { status: 401 }
       );
     }
@@ -35,41 +46,34 @@ export async function POST(req: Request) {
     if (!isMatch) {
       console.log('Şifre eşleşmedi:', body.email);
       return NextResponse.json(
-        { error: 'E-posta veya şifre hatalı. Lütfen tekrar deneyin.' },
+        { error: 'E-posta veya şifre hatalı' },
         { status: 401 }
       );
     }
 
-    // JWT token oluştur
+    // JWT token oluşturma
     const token = jwt.sign(
-      { 
-        userId: user._id, 
-        role: user.role,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName
-      },
+      { userId: user._id },
       process.env.JWT_SECRET || 'default-secret',
-      { expiresIn: body.rememberMe ? '30d' : '24h' }
+      { expiresIn: '7d' }
     );
 
-    // Response
     return NextResponse.json({
       message: 'Giriş başarılı',
       token,
       user: {
         id: user._id,
-        role: user.role,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        lastSelectedRole: user.lastSelectedRole,
       },
     });
   } catch (error: any) {
-    console.error('Login API hatası:', error);
+    console.error('API hatası:', error);
     return NextResponse.json(
-      { error: 'Bir hata oluştu. Lütfen tekrar deneyin.' },
+      { error: error.message || 'Bir hata oluştu' },
       { status: 500 }
     );
   }
-} 
+}
