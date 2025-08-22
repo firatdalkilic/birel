@@ -1,21 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { FaBars, FaTimes, FaUser, FaSignOutAlt, FaExchangeAlt } from "react-icons/fa";
 import { useAuthStore } from "@/store/authStore";
 
-interface User {
-  firstName: string;
-  lastName: string;
-  lastSelectedRole?: 'gorevli' | 'gorevveren' | null;
-}
-
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated, selectedRole, user, logout } = useAuthStore();
+  const { isAuthenticated, selectedRole, logout } = useAuthStore();
 
   const handleLogout = () => {
     logout();
@@ -23,7 +18,7 @@ export default function Navbar() {
   };
 
   const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
-    <a
+    <Link
       href={href}
       className={`text-gray-700 hover:text-[#FFC107] transition-colors ${
         pathname === href ? 'text-[#FFC107] font-medium' : ''
@@ -31,7 +26,7 @@ export default function Navbar() {
       onClick={() => setIsMenuOpen(false)}
     >
       {children}
-    </a>
+    </Link>
   );
 
   return (
@@ -39,9 +34,9 @@ export default function Navbar() {
       <div className="container-custom">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <a href="/" className="flex items-center">
+          <Link href="/" className="flex items-center">
             <span className="text-2xl font-bold text-[#FFC107]">Bir El</span>
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
@@ -68,13 +63,13 @@ export default function Navbar() {
             ) : (
               <>
                 <NavLink href="/giris">Giriş Yap</NavLink>
-                <a
+                <Link
                   href="/kayit"
                   className="bg-[#FFC107] text-[#0A2540] px-4 py-2 rounded-lg hover:bg-[#FFB000] transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Kayıt Ol
-                </a>
+                </Link>
               </>
             )}
           </div>
@@ -134,13 +129,13 @@ export default function Navbar() {
                   ) : (
                     <>
                       <NavLink href="/giris">Giriş Yap</NavLink>
-                      <a
+                      <Link
                         href="/kayit"
                         className="bg-[#FFC107] text-[#0A2540] px-4 py-2 rounded-lg hover:bg-[#FFB000] transition-colors text-center"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Kayıt Ol
-                      </a>
+                      </Link>
                     </>
                   )}
                 </div>
