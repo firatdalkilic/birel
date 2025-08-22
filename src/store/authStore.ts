@@ -12,15 +12,30 @@ interface User {
 interface AuthState {
   isAuthenticated: boolean;
   selectedRole: string | null;
-  hasSelectedInitialRole: boolean; // Yeni eklenen flag
+  hasSelectedInitialRole: boolean;
   user: User | null;
   setAuth: (isAuth: boolean) => void;
   setRole: (role: string | null) => void;
   setUser: (user: User | null) => void;
-  setHasSelectedInitialRole: (value: boolean) => void; // Yeni eklenen fonksiyon
+  setHasSelectedInitialRole: (value: boolean) => void;
   checkAuth: () => void;
   logout: () => void;
 }
+
+// Cookie yardımcı fonksiyonları
+const getCookie = (name: string): string | null => {
+  if (typeof document === 'undefined') return null;
+  
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  return null;
+};
+
+const deleteCookie = (name: string) => {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+};
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -31,40 +46,60 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       
       setAuth: (isAuth) => set({ isAuthenticated: isAuth }),
-      setRole: (role) => set({ selectedRole: role }),
-      setUser: (user) => set({ user }),
-      setHasSelectedInitialRole: (value) => set({ hasSelectedInitialRole: value }),
+      setRole: (role) => {
+        if (typeof document !== 'undefined') {
+          document.cookie = `selectedRole=${role}; path=/; max-age=${7 * 24 * 60 * 60}`;
+        }
+        set({ selectedRole: role });
+      },
+      setUser: (user) => {
+        if (user && typeof document !== 'undefined') {
+          document.cookie = `user=${JSON.stringify(user)}; path=/; max-age=${7 * 24 * 60 * 60}`;
+        }
+        set({ user });
+      },
+      setHasSelectedInitialRole: (value) => {
+        if (typeof document !== 'undefined') {
+          document.cookie = `hasSelectedInitialRole=${value}; path=/; max-age=${7 * 24 * 60 * 60}`;
+        }
+        set({ hasSelectedInitialRole: value });
+      },
       
       checkAuth: () => {
-        if (typeof window === 'undefined') return;
+        if (typeof document === 'undefined') return;
         
-        const token = localStorage.getItem('token');
-        const role = localStorage.getItem('selectedRole');
-        const userStr = localStorage.getItem('user');
-        const hasSelectedRole = localStorage.getItem('hasSelectedInitialRole');
+        const token = getCookie('token');
+        const userStr = getCookie('user');
+        const selectedRole = getCookie('selectedRole');
+        const hasSelectedRole = getCookie('hasSelectedInitialRole');
         
         set({
           isAuthenticated: !!token,
-          selectedRole: role,
+          selectedRole: selectedRole,
           user: userStr ? JSON.parse(userStr) : null,
           hasSelectedInitialRole: hasSelectedRole === 'true'
         });
       },
 
       logout: () => {
-        if (typeof window === 'undefined') return;
+        if (typeof document === 'undefined') return;
         
-        localStorage.removeItem('token');
-        localStorage.removeItem('selectedRole');
-        localStorage.removeItem('user');
-        localStorage.removeItem('hasSelectedInitialRole');
+        // Cookie'leri temizle
+        deleteCookie('token');
+        deleteCookie('user');
+        deleteCookie('selectedRole');
+        deleteCookie('hasSelectedInitialRole');
         
+        // State'i temizle
         set({
           isAuthenticated: false,
           selectedRole: null,
           user: null,
           hasSelectedInitialRole: false
         });
+
+        // Sayfayı yenile
+        window.location.href = '/';
       }
     }),
     {

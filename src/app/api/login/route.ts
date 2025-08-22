@@ -42,32 +42,60 @@ export async function POST(req: Request) {
 
     // JWT token oluşturma
     const token = jwt.sign(
-      { userId: user._id },
+      { 
+        userId: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.lastSelectedRole
+      },
       process.env.JWT_SECRET || 'default-secret',
       { expiresIn: '7d' }
     );
+
+    // Kullanıcı bilgilerini hazırla
+    const userData = {
+      id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.lastSelectedRole
+    };
 
     // Response oluştur
     const response = NextResponse.json({
       message: 'Giriş başarılı',
       token,
-      user: {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        role: user.lastSelectedRole
-      }
+      user: userData
     });
 
-    // Token'ı cookie olarak ayarla
-    response.cookies.set('token', token, {
+    // Cookie'leri ayarla
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'lax' as const,
       maxAge: 7 * 24 * 60 * 60, // 7 gün
       path: '/',
+    };
+
+    // Token ve kullanıcı bilgilerini cookie olarak ayarla
+    response.cookies.set('token', token, cookieOptions);
+    response.cookies.set('user', JSON.stringify(userData), {
+      ...cookieOptions,
+      httpOnly: false // Client-side'dan erişilebilir olması için
     });
+
+    // Rol seçimi için cookie'ler
+    if (user.lastSelectedRole) {
+      response.cookies.set('selectedRole', user.lastSelectedRole, {
+        ...cookieOptions,
+        httpOnly: false
+      });
+      response.cookies.set('hasSelectedInitialRole', 'true', {
+        ...cookieOptions,
+        httpOnly: false
+      });
+    }
 
     return response;
 
