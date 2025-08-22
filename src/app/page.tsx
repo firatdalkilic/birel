@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 
@@ -36,32 +35,41 @@ const CATEGORIES = [
 export default function Home() {
   const router = useRouter();
   const { isAuthenticated, setAuth, setUser } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Token kontrolü
-    const token = localStorage.getItem('token');
+    const token = document.cookie.includes('token=');
     if (token) {
-      // Kullanıcı bilgilerini kontrol et
-      const user = localStorage.getItem('user');
-      if (user) {
-        setAuth(true);
-        setUser(JSON.parse(user));
-        
-        // Role göre yönlendirme
-        const lastSelectedRole = localStorage.getItem('selectedRole');
-        const hasSelectedInitialRole = localStorage.getItem('hasSelectedInitialRole');
-        
-        if (hasSelectedInitialRole === 'true' && lastSelectedRole) {
-          router.push(`/dashboard/${lastSelectedRole}`);
-        } else if (token) {
-          router.push('/rol-sec');
+      const userStr = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('user='));
+      
+      if (userStr) {
+        try {
+          const userJson = decodeURIComponent(userStr.split('=')[1]);
+          setAuth(true);
+          setUser(JSON.parse(userJson));
+          
+          const hasSelectedRole = document.cookie.includes('hasSelectedInitialRole=true');
+          const selectedRoleCookie = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('selectedRole='));
+          const selectedRole = selectedRoleCookie ? selectedRoleCookie.split('=')[1] : null;
+          
+          if (hasSelectedRole && selectedRole) {
+            window.location.href = `/dashboard/${selectedRole}`;
+          } else {
+            window.location.href = '/rol-sec';
+          }
+        } catch (error) {
+          console.error('User cookie parse error:', error);
         }
       }
     }
-  }, [router, setAuth, setUser]);
+    setIsLoading(false);
+  }, [setAuth, setUser]);
 
-  // Eğer kullanıcı giriş yapmışsa ve yönlendirme bekleniyorsa boş sayfa göster
-  if (isAuthenticated) {
+  if (isLoading || isAuthenticated) {
     return null;
   }
 
@@ -93,26 +101,18 @@ export default function Home() {
                 Güvenli ve hızlı yardımlaşma platformu.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link 
+                <a 
                   href="/kayit" 
                   className="bg-[#FFC107] text-[#0A2540] px-8 py-4 rounded-lg font-medium hover:bg-[#FFC107]/90 transition-colors text-lg"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.location.href = '/kayit';
-                  }}
                 >
                   Kayıt Ol
-                </Link>
-                <Link 
+                </a>
+                <a 
                   href="/giris"
                   className="bg-white text-[#0A2540] px-8 py-4 rounded-lg font-medium border-2 border-[#0A2540] hover:bg-gray-50 transition-colors text-lg"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.location.href = '/giris';
-                  }}
                 >
                   Giriş Yap
-                </Link>
+                </a>
               </div>
             </div>
           </div>

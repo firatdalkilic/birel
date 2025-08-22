@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { FaBars, FaTimes, FaUser, FaSignOutAlt, FaExchangeAlt } from "react-icons/fa";
 
@@ -18,55 +17,44 @@ export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Token'dan kullanıcı bilgilerini al
-    const token = localStorage.getItem('token');
-    if (token) {
+    const userStr = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('user='));
+    if (userStr) {
       try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        setUser({
-          firstName: payload.firstName,
-          lastName: payload.lastName,
-          lastSelectedRole: payload.role,
-        });
+        const userJson = decodeURIComponent(userStr.split('=')[1]);
+        setUser(JSON.parse(userJson));
       } catch (error) {
-        console.error('Token çözümleme hatası:', error);
-        // Token hatalıysa temizle
-        handleLogout();
+        console.error('User cookie parse error:', error);
       }
     }
   }, []);
 
   const handleLogout = () => {
+    // Cookie'leri temizle
+    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'selectedRole=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'hasSelectedInitialRole=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    
     // State'i temizle
     setUser(null);
-    
-    // Local storage'ı temizle
-    localStorage.removeItem('token');
-    localStorage.removeItem('selectedRole');
-    
-    // Menüyü kapat (eğer açıksa)
     setIsMenuOpen(false);
     
     // Ana sayfaya yönlendir
     window.location.href = '/';
   };
 
-  const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
-    e.preventDefault();
-    setIsMenuOpen(false);
-    window.location.href = path;
-  };
-
   const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
-    <Link
+    <a
       href={href}
       className={`text-gray-700 hover:text-[#FFC107] transition-colors ${
         pathname === href ? 'text-[#FFC107] font-medium' : ''
       }`}
-      onClick={(e) => handleNavigation(e, href)}
+      onClick={() => setIsMenuOpen(false)}
     >
       {children}
-    </Link>
+    </a>
   );
 
   return (
@@ -74,13 +62,9 @@ export default function Navbar() {
       <div className="container-custom">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link 
-            href="/" 
-            className="flex items-center"
-            onClick={(e) => handleNavigation(e, '/')}
-          >
+          <a href="/" className="flex items-center">
             <span className="text-2xl font-bold text-[#FFC107]">Bir El</span>
-          </Link>
+          </a>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
@@ -107,13 +91,13 @@ export default function Navbar() {
             ) : (
               <>
                 <NavLink href="/giris">Giriş Yap</NavLink>
-                <Link
+                <a
                   href="/kayit"
                   className="bg-[#FFC107] text-[#0A2540] px-4 py-2 rounded-lg hover:bg-[#FFB000] transition-colors"
-                  onClick={(e) => handleNavigation(e, '/kayit')}
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   Kayıt Ol
-                </Link>
+                </a>
               </>
             )}
           </div>
@@ -173,13 +157,13 @@ export default function Navbar() {
                   ) : (
                     <>
                       <NavLink href="/giris">Giriş Yap</NavLink>
-                      <Link
+                      <a
                         href="/kayit"
                         className="bg-[#FFC107] text-[#0A2540] px-4 py-2 rounded-lg hover:bg-[#FFB000] transition-colors text-center"
-                        onClick={(e) => handleNavigation(e, '/kayit')}
+                        onClick={() => setIsMenuOpen(false)}
                       >
                         Kayıt Ol
-                      </Link>
+                      </a>
                     </>
                   )}
                 </div>
