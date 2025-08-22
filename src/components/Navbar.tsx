@@ -48,10 +48,13 @@ export default function Navbar() {
     setIsMenuOpen(false);
     
     // Ana sayfaya yönlendir
-    router.push('/');
-    
-    // Sayfayı yenile (opsiyonel, state'lerin tamamen temizlenmesi için)
-    router.refresh();
+    window.location.href = '/';
+  };
+
+  const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+    window.location.href = path;
   };
 
   const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
@@ -60,7 +63,7 @@ export default function Navbar() {
       className={`text-gray-700 hover:text-[#FFC107] transition-colors ${
         pathname === href ? 'text-[#FFC107] font-medium' : ''
       }`}
-      onClick={() => setIsMenuOpen(false)}
+      onClick={(e) => handleNavigation(e, href)}
     >
       {children}
     </Link>
@@ -71,7 +74,11 @@ export default function Navbar() {
       <div className="container-custom">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
+          <Link 
+            href="/" 
+            className="flex items-center"
+            onClick={(e) => handleNavigation(e, '/')}
+          >
             <span className="text-2xl font-bold text-[#FFC107]">Bir El</span>
           </Link>
 
@@ -103,6 +110,7 @@ export default function Navbar() {
                 <Link
                   href="/kayit"
                   className="bg-[#FFC107] text-[#0A2540] px-4 py-2 rounded-lg hover:bg-[#FFB000] transition-colors"
+                  onClick={(e) => handleNavigation(e, '/kayit')}
                 >
                   Kayıt Ol
                 </Link>
@@ -168,7 +176,7 @@ export default function Navbar() {
                       <Link
                         href="/kayit"
                         className="bg-[#FFC107] text-[#0A2540] px-4 py-2 rounded-lg hover:bg-[#FFB000] transition-colors text-center"
-                        onClick={() => setIsMenuOpen(false)}
+                        onClick={(e) => handleNavigation(e, '/kayit')}
                       >
                         Kayıt Ol
                       </Link>
@@ -182,4 +190,4 @@ export default function Navbar() {
       </div>
     </nav>
   );
-} 
+}

@@ -22,6 +22,11 @@ export default function Header() {
     window.location.href = '/';
   };
 
+  const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+    e.preventDefault();
+    window.location.href = path;
+  };
+
   // Server-side rendering sırasında auth durumunu gösterme
   if (typeof window === 'undefined') {
     return null;
@@ -31,7 +36,11 @@ export default function Header() {
     <header className="py-4 bg-white shadow-sm">
       <div className="container-custom">
         <nav className="flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold text-[#0A2540]">
+          <Link 
+            href="/" 
+            className="text-2xl font-bold text-[#0A2540]"
+            onClick={(e) => handleNavigation(e, '/')}
+          >
             Bir El
           </Link>
 
@@ -39,15 +48,24 @@ export default function Header() {
             {!isAuthenticated ? (
               // Giriş yapmamış kullanıcılar için
               <>
-                <Link href="/" className="text-gray-600 hover:text-gray-900">
+                <Link 
+                  href="/" 
+                  className="text-gray-600 hover:text-gray-900"
+                  onClick={(e) => handleNavigation(e, '/')}
+                >
                   Ana Sayfa
                 </Link>
-                <Link href="/giris" className="text-gray-600 hover:text-gray-900">
+                <Link 
+                  href="/giris" 
+                  className="text-gray-600 hover:text-gray-900"
+                  onClick={(e) => handleNavigation(e, '/giris')}
+                >
                   Giriş Yap
                 </Link>
                 <Link
                   href="/kayit"
                   className="bg-[#FFC107] text-[#0A2540] px-4 py-2 rounded-lg font-medium hover:bg-[#FFB000] transition-colors"
+                  onClick={(e) => handleNavigation(e, '/kayit')}
                 >
                   Kayıt Ol
                 </Link>
@@ -58,6 +76,7 @@ export default function Header() {
                 <Link 
                   href={selectedRole === 'gorevveren' ? '/dashboard/gorevveren' : '/dashboard/gorevli'} 
                   className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
+                  onClick={(e) => handleNavigation(e, selectedRole === 'gorevveren' ? '/dashboard/gorevveren' : '/dashboard/gorevli')}
                 >
                   <FaTasks className="text-lg" />
                   <span className="hidden sm:inline">Görevlerim</span>
@@ -65,6 +84,7 @@ export default function Header() {
                 <Link 
                   href="/profil" 
                   className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
+                  onClick={(e) => handleNavigation(e, '/profil')}
                 >
                   <FaUserCircle className="text-lg" />
                   <span className="hidden sm:inline">Profilim</span>

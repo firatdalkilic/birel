@@ -44,13 +44,12 @@ export function middleware(request: NextRequest) {
   }
 
   // Korumalı route'lar için token kontrolü
-  if (!token) {
+  if (!token && path !== '/') {
     return NextResponse.redirect(new URL('/giris', request.url));
   }
 
   // Rol seçim sayfası kontrolü
   if (path === '/rol-sec') {
-    // Token yoksa giriş sayfasına yönlendir
     if (!token) {
       return NextResponse.redirect(new URL('/giris', request.url));
     }
