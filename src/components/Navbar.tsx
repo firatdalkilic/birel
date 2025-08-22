@@ -58,7 +58,7 @@ export default function Navbar() {
                 <NavLink href="/rol-sec">
                   <div className="flex items-center gap-2">
                     <FaExchangeAlt className="w-4 h-4" />
-                    <span>Rol Değiştir</span>
+                    <span>Rol Seç</span>
                   </div>
                 </NavLink>
                 <button
@@ -123,7 +123,7 @@ export default function Navbar() {
                       <NavLink href="/rol-sec">
                         <div className="flex items-center gap-2">
                           <FaExchangeAlt className="w-4 h-4" />
-                          <span>Rol Değiştir</span>
+                          <span>Rol Seç</span>
                         </div>
                       </NavLink>
                       <button

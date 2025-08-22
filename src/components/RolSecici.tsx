@@ -22,28 +22,20 @@ export default function RolSecici() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleRoleChange = async (newRole: 'gorevveren' | 'gorevli') => {
-    try {
-      // Cookie'leri ayarla
-      document.cookie = `selectedRole=${newRole}; path=/; max-age=${7 * 24 * 60 * 60}`;
-      document.cookie = `hasSelectedInitialRole=true; path=/; max-age=${7 * 24 * 60 * 60}`;
-      
-      // Store'u güncelle
-      setRole(newRole);
-      setHasSelectedInitialRole(true);
-      
-      // Dropdown'ı kapat
-      setIsOpen(false);
-      
-      // Bildirim göster
-      setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 2000);
+  const handleRoleChange = (newRole: 'gorevveren' | 'gorevli') => {
+    // Store'u güncelle
+    setRole(newRole);
+    setHasSelectedInitialRole(true);
+    
+    // Dropdown'ı kapat
+    setIsOpen(false);
+    
+    // Bildirim göster
+    setShowNotification(true);
+    setTimeout(() => setShowNotification(false), 2000);
 
-      // Direkt olarak ilgili dashboard'a yönlendir
-      window.location.href = `/dashboard/${newRole}`;
-    } catch (error) {
-      console.error('Rol değiştirme hatası:', error);
-    }
+    // Yönlendirme yap
+    router.push(`/dashboard/${newRole}`);
   };
 
   // Eğer kullanıcı giriş yapmamışsa bileşeni gösterme
