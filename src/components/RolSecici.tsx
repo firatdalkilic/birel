@@ -9,7 +9,7 @@ export default function RolSecici() {
   const [isOpen, setIsOpen] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { selectedRole, setRole } = useAuthStore();
+  const { selectedRole, setRole, setHasSelectedInitialRole } = useAuthStore();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -22,21 +22,32 @@ export default function RolSecici() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleRoleChange = (newRole: 'gorevveren' | 'gorevli') => {
-    setRole(newRole);
-    localStorage.setItem('selectedRole', newRole);
-    setIsOpen(false);
-    
-    // Bildirim göster
-    setShowNotification(true);
-    setTimeout(() => setShowNotification(false), 2000);
+  const handleRoleChange = async (newRole: 'gorevveren' | 'gorevli') => {
+    try {
+      // Cookie'leri ayarla
+      document.cookie = `selectedRole=${newRole}; path=/; max-age=${7 * 24 * 60 * 60}`;
+      document.cookie = `hasSelectedInitialRole=true; path=/; max-age=${7 * 24 * 60 * 60}`;
+      
+      // Store'u güncelle
+      setRole(newRole);
+      setHasSelectedInitialRole(true);
+      
+      // Dropdown'ı kapat
+      setIsOpen(false);
+      
+      // Bildirim göster
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 2000);
 
-    // Direkt olarak ilgili dashboard'a yönlendir
-    router.push(`/dashboard/${newRole}`);
+      // Direkt olarak ilgili dashboard'a yönlendir
+      window.location.href = `/dashboard/${newRole}`;
+    } catch (error) {
+      console.error('Rol değiştirme hatası:', error);
+    }
   };
 
   // Eğer kullanıcı giriş yapmamışsa bileşeni gösterme
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const token = typeof window !== 'undefined' ? document.cookie.includes('token=') : false;
   if (!token) return null;
 
   return (
