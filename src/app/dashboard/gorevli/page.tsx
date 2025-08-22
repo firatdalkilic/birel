@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { mockUser, mockUserStats, mockReviews } from '@/data/mockData';
+import { mockUser, mockUserStats, mockReviews, mockOffers } from '@/data/mockData';
 import { useAuthStore } from '@/store/authStore';
 import StarRating from '@/components/StarRating';
 import ReviewCard from '@/components/ReviewCard';
