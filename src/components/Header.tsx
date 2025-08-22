@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { FaTasks, FaUserCircle } from "react-icons/fa";
-import { MdSwapHoriz } from "react-icons/md";
 import { IoLogOutOutline } from "react-icons/io5";
+import RolSecici from "./RolSecici";
 
 export default function Header() {
   const { isAuthenticated, selectedRole, checkAuth, logout } = useAuthStore();
@@ -60,28 +60,22 @@ export default function Header() {
                   className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
                 >
                   <FaTasks className="text-lg" />
-                  <span>Görevlerim</span>
+                  <span className="hidden sm:inline">Görevlerim</span>
                 </Link>
                 <Link 
                   href="/profil" 
                   className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
                 >
                   <FaUserCircle className="text-lg" />
-                  <span>Profilim</span>
+                  <span className="hidden sm:inline">Profilim</span>
                 </Link>
-                <Link 
-                  href="/rol-sec" 
-                  className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
-                >
-                  <MdSwapHoriz className="text-lg" />
-                  <span>Rol Değiştir</span>
-                </Link>
+                <RolSecici />
                 <button
                   onClick={handleLogout}
                   className="text-red-600 hover:text-red-700 flex items-center gap-2"
                 >
                   <IoLogOutOutline className="text-lg" />
-                  <span>Çıkış Yap</span>
+                  <span className="hidden sm:inline">Çıkış Yap</span>
                 </button>
               </>
             )}
@@ -90,4 +84,4 @@ export default function Header() {
       </div>
     </header>
   );
-} 
+}
