@@ -17,26 +17,13 @@ export default function Navbar() {
     router.push('/');
   };
 
-  const handleGorevlerimClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const role = localStorage.getItem('selectedRole');
-    if (role) {
-      router.push(`/dashboard/${role}`);
-    }
-  };
-
-  const NavLink = ({ href, children, onClick }: { href: string; children: React.ReactNode; onClick?: (e: React.MouseEvent) => void }) => (
+  const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
     <Link
       href={href}
       className={`text-gray-700 hover:text-[#FFC107] transition-colors ${
         pathname === href ? 'text-[#FFC107] font-medium' : ''
       }`}
-      onClick={(e) => {
-        if (onClick) {
-          onClick(e);
-        }
-        setIsMenuOpen(false);
-      }}
+      onClick={() => setIsMenuOpen(false)}
     >
       {children}
     </Link>
@@ -57,12 +44,6 @@ export default function Navbar() {
             
             {isAuthenticated ? (
               <>
-                <NavLink 
-                  href={`/dashboard/${selectedRole}`} 
-                  onClick={handleGorevlerimClick}
-                >
-                  Görevlerim
-                </NavLink>
                 <NavLink href="/profil">Profilim</NavLink>
                 <NavLink href="/rol-sec">
                   <div className="flex items-center gap-2">
@@ -128,12 +109,6 @@ export default function Navbar() {
                   
                   {isAuthenticated ? (
                     <>
-                      <NavLink 
-                        href={`/dashboard/${selectedRole}`}
-                        onClick={handleGorevlerimClick}
-                      >
-                        Görevlerim
-                      </NavLink>
                       <NavLink href="/profil">Profilim</NavLink>
                       <NavLink href="/rol-sec">
                         <div className="flex items-center gap-2">
