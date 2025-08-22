@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
+import { cookies } from 'next/headers';
 
 export async function POST(req: Request) {
   // CORS headers
@@ -57,6 +58,16 @@ export async function POST(req: Request) {
       process.env.JWT_SECRET || 'default-secret',
       { expiresIn: '7d' }
     );
+
+    // Cookie ayarla
+    const cookieStore = cookies();
+    cookieStore.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60, // 7 gün
+      path: '/',
+    });
 
     // Kullanıcı bilgilerini hazırla
     const userData = {

@@ -22,15 +22,19 @@ export default function LoginPage() {
     setIsLoading(true);
     
     try {
+      console.log('Giriş denemesi:', { email: formData.email });
+      
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
+        credentials: 'include', // Cookie'leri almak için önemli
       });
 
       const data = await response.json();
+      console.log('Giriş yanıtı:', { success: response.ok, status: response.status });
 
       if (!response.ok) {
         throw new Error(data.error || 'Giriş sırasında bir hata oluştu');
@@ -51,7 +55,7 @@ export default function LoginPage() {
 
     } catch (error: any) {
       console.error('Giriş hatası:', error);
-      setError(error.message);
+      setError(error.message || 'Giriş yapılırken bir hata oluştu');
     } finally {
       setIsLoading(false);
     }
