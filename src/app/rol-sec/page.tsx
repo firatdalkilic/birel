@@ -6,7 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 
 export default function RoleSelectionPage() {
   const router = useRouter();
-  const { isAuthenticated, hasSelectedInitialRole, setRole, setHasSelectedInitialRole } = useAuthStore();
+  const { isAuthenticated, setRole, setHasSelectedInitialRole } = useAuthStore();
 
   useEffect(() => {
     // Giriş yapmamış kullanıcıları yönlendir
@@ -14,36 +14,20 @@ export default function RoleSelectionPage() {
       router.push('/giris');
       return;
     }
+  }, [isAuthenticated, router]);
 
-    // Daha önce rol seçimi yapılmışsa dashboard'a yönlendir
-    if (hasSelectedInitialRole) {
-      const selectedRole = localStorage.getItem('selectedRole');
-      if (selectedRole) {
-        router.push(`/dashboard/${selectedRole}`);
-      }
-    }
-  }, [isAuthenticated, hasSelectedInitialRole, router]);
-
-  const handleRoleSelect = async (role: 'gorevveren' | 'gorevli') => {
-    try {
-      // Cookie'leri ayarla
-      document.cookie = `selectedRole=${role}; path=/; max-age=${7 * 24 * 60 * 60}`;
-      document.cookie = `hasSelectedInitialRole=true; path=/; max-age=${7 * 24 * 60 * 60}`;
-      
-      // Store'u güncelle
-      setRole(role);
-      setHasSelectedInitialRole(true);
-      
-      // Yönlendir
-      router.push(`/dashboard/${role}`);
-    } catch (error) {
-      console.error('Rol seçimi hatası:', error);
-    }
+  const handleRoleSelect = (role: 'gorevveren' | 'gorevli') => {
+    // Store'u güncelle
+    setRole(role);
+    setHasSelectedInitialRole(true);
+    
+    // Local storage'a kaydet
+    localStorage.setItem('selectedRole', role);
+    localStorage.setItem('hasSelectedInitialRole', 'true');
+    
+    // Yönlendir
+    window.location.href = `/dashboard/${role}`;
   };
-
-  if (!isAuthenticated || hasSelectedInitialRole) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">

@@ -28,12 +28,29 @@ export function middleware(request: NextRequest) {
   
   // Public route kontrolü
   if (publicRoutes.includes(path)) {
+    // Giriş yapmış kullanıcılar giriş/kayıt sayfalarına giremez
+    if (token && (path === '/giris' || path === '/kayit')) {
+      const selectedRole = request.cookies.get('selectedRole')?.value;
+      if (selectedRole) {
+        return NextResponse.redirect(new URL(`/dashboard/${selectedRole}`, request.url));
+      }
+      return NextResponse.redirect(new URL('/rol-sec', request.url));
+    }
     return NextResponse.next();
   }
 
   // Token yoksa giriş sayfasına yönlendir
   if (!token) {
     return NextResponse.redirect(new URL('/giris', request.url));
+  }
+
+  // Dashboard route kontrolü
+  if (path.startsWith('/dashboard/')) {
+    const selectedRole = request.cookies.get('selectedRole')?.value;
+    if (!selectedRole) {
+      return NextResponse.redirect(new URL('/rol-sec', request.url));
+    }
+    return NextResponse.next();
   }
 
   // Token varsa devam et
