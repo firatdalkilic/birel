@@ -1,12 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function RegisterPage() {
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<'gorevveren' | 'gorevli' | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  useEffect(() => {
+    // Token kontrolü
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+      // Role göre yönlendirme
+      const lastSelectedRole = localStorage.getItem('selectedRole');
+      if (!lastSelectedRole) {
+        router.push('/rol-sec');
+      } else if (lastSelectedRole === 'gorevveren') {
+        router.push('/dashboard/gorevveren');
+      } else if (lastSelectedRole === 'gorevli') {
+        router.push('/dashboard/gorevli');
+      }
+    }
+  }, [router]);
+
+  // Eğer kullanıcı giriş yapmışsa ve yönlendirme bekleniyorsa boş sayfa göster
+  if (isAuthenticated) {
+    return null;
+  }
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
