@@ -27,21 +27,23 @@ export function middleware(request: NextRequest) {
   // Public routes - her zaman erişilebilir
   const publicRoutes = ['/', '/giris', '/kayit', '/gizlilik', '/kvkk', '/sss', '/iletisim'];
   
-  // Ana sayfa özel kontrolü
-  if (path === '/') {
-    return NextResponse.next(); // Ana sayfaya her zaman izin ver
-  }
-
-  // Diğer public route'lar için kontrol
+  // Public route kontrolü
   if (publicRoutes.includes(path)) {
-    // Eğer token varsa ve giriş/kayıt sayfalarındaysa rol seçimine yönlendir
+    // Giriş yapmış kullanıcılar giriş/kayıt sayfalarına giremez
     if (token && (path === '/giris' || path === '/kayit')) {
+      // Rol seçimi yapılmış mı kontrol et
+      const hasSelectedRole = request.cookies.get('hasSelectedInitialRole')?.value === 'true';
+      const selectedRole = request.cookies.get('selectedRole')?.value;
+      
+      if (hasSelectedRole && selectedRole) {
+        return NextResponse.redirect(new URL(`/dashboard/${selectedRole}`, request.url));
+      }
       return NextResponse.redirect(new URL('/rol-sec', request.url));
     }
     return NextResponse.next();
   }
 
-  // Token yoksa ve korumalı bir sayfaya erişmeye çalışıyorsa giriş sayfasına yönlendir
+  // Korumalı route'lar için token kontrolü
   if (!token) {
     return NextResponse.redirect(new URL('/giris', request.url));
   }
@@ -51,6 +53,12 @@ export function middleware(request: NextRequest) {
     // Token yoksa giriş sayfasına yönlendir
     if (!token) {
       return NextResponse.redirect(new URL('/giris', request.url));
+    }
+    // Rol seçimi yapılmışsa dashboard'a yönlendir
+    const hasSelectedRole = request.cookies.get('hasSelectedInitialRole')?.value === 'true';
+    const selectedRole = request.cookies.get('selectedRole')?.value;
+    if (hasSelectedRole && selectedRole) {
+      return NextResponse.redirect(new URL(`/dashboard/${selectedRole}`, request.url));
     }
     return NextResponse.next();
   }
