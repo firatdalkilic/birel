@@ -9,36 +9,44 @@ export default function RoleSelectionPage() {
   const { isAuthenticated, hasSelectedInitialRole, setRole, setHasSelectedInitialRole } = useAuthStore();
 
   useEffect(() => {
-    // Token kontrolü
-    const token = localStorage.getItem('token');
+    // Cookie kontrolü
+    const token = document.cookie.includes('token=');
     if (!token) {
-      router.push('/giris');
+      window.location.href = '/giris';
       return;
     }
 
     // Daha önce rol seçimi yapılmışsa dashboard'a yönlendir
-    const hasSelectedRole = localStorage.getItem('hasSelectedInitialRole');
-    if (hasSelectedRole === 'true') {
-      const selectedRole = localStorage.getItem('selectedRole');
+    const hasSelectedRole = document.cookie.includes('hasSelectedInitialRole=true');
+    if (hasSelectedRole) {
+      const selectedRoleCookie = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('selectedRole='));
+      const selectedRole = selectedRoleCookie ? selectedRoleCookie.split('=')[1] : null;
+      
       if (selectedRole) {
-        router.push(`/dashboard/${selectedRole}`);
+        window.location.href = `/dashboard/${selectedRole}`;
       }
     }
-  }, [router]);
+  }, []);
 
   const handleRoleSelect = (role: 'gorevveren' | 'gorevli') => {
-    localStorage.setItem('selectedRole', role);
-    localStorage.setItem('hasSelectedInitialRole', 'true');
+    // Cookie'leri ayarla
+    const maxAge = 7 * 24 * 60 * 60; // 7 gün
+    document.cookie = `selectedRole=${role}; path=/; max-age=${maxAge}`;
+    document.cookie = `hasSelectedInitialRole=true; path=/; max-age=${maxAge}`;
+    
+    // Store'u güncelle
     setRole(role);
     setHasSelectedInitialRole(true);
     
-    // Direkt olarak ilgili dashboard'a yönlendir
-    router.push(`/dashboard/${role}`);
+    // Yönlendir
+    window.location.href = `/dashboard/${role}`;
   };
 
   // Token yoksa veya rol seçilmişse sayfa gösterme
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  const hasSelectedRole = typeof window !== 'undefined' ? localStorage.getItem('hasSelectedInitialRole') === 'true' : false;
+  const token = document.cookie.includes('token=');
+  const hasSelectedRole = document.cookie.includes('hasSelectedInitialRole=true');
   
   if (!token || hasSelectedRole) {
     return null;

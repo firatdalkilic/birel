@@ -3,8 +3,7 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   // Token kontrolü
-  const token = request.cookies.get('token')?.value || 
-                request.headers.get('Authorization')?.split(' ')[1];
+  const token = request.cookies.get('token')?.value;
 
   // URL'den path'i al
   const path = request.nextUrl.pathname;
@@ -58,6 +57,18 @@ export function middleware(request: NextRequest) {
     const selectedRole = request.cookies.get('selectedRole')?.value;
     if (hasSelectedRole && selectedRole) {
       return NextResponse.redirect(new URL(`/dashboard/${selectedRole}`, request.url));
+    }
+    return NextResponse.next();
+  }
+
+  // Dashboard route kontrolü
+  if (path.startsWith('/dashboard/')) {
+    if (!token) {
+      return NextResponse.redirect(new URL('/giris', request.url));
+    }
+    const hasSelectedRole = request.cookies.get('hasSelectedInitialRole')?.value === 'true';
+    if (!hasSelectedRole) {
+      return NextResponse.redirect(new URL('/rol-sec', request.url));
     }
     return NextResponse.next();
   }
