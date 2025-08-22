@@ -9,7 +9,7 @@ export default function RolSecici() {
   const [isOpen, setIsOpen] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { role, setRole } = useAuthStore();
+  const { selectedRole, setRole } = useAuthStore();
 
   // Dropdown dışına tıklandığında menüyü kapat
   useEffect(() => {
@@ -52,10 +52,10 @@ export default function RolSecici() {
         className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FFC107] rounded-lg"
       >
         <span className="hidden sm:block">
-          {role ? `Aktif Rol: ${role === 'gorevveren' ? 'Görev Veren' : 'Görev Alan'}` : 'Rol Seçin'}
+          {selectedRole ? `Aktif Rol: ${selectedRole === 'gorevveren' ? 'Görev Veren' : 'Görev Alan'}` : 'Rol Seçin'}
         </span>
         <span className="sm:hidden">
-          {role ? (role === 'gorevveren' ? '👋' : '🤝') : '👤'}
+          {selectedRole ? (selectedRole === 'gorevveren' ? '👋' : '🤝') : '👤'}
         </span>
         <svg className={`h-5 w-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -69,12 +69,12 @@ export default function RolSecici() {
             <button
               onClick={() => handleRoleChange('gorevveren')}
               className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2
-                ${role === 'gorevveren' ? 'text-[#FFC107] font-medium' : 'text-gray-700'}`}
+                ${selectedRole === 'gorevveren' ? 'text-[#FFC107] font-medium' : 'text-gray-700'}`}
               role="menuitem"
             >
               <span>👋</span>
               <span>Görev Veren</span>
-              {role === 'gorevveren' && (
+              {selectedRole === 'gorevveren' && (
                 <svg className="ml-auto h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
@@ -83,12 +83,12 @@ export default function RolSecici() {
             <button
               onClick={() => handleRoleChange('gorevli')}
               className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2
-                ${role === 'gorevli' ? 'text-[#FFC107] font-medium' : 'text-gray-700'}`}
+                ${selectedRole === 'gorevli' ? 'text-[#FFC107] font-medium' : 'text-gray-700'}`}
               role="menuitem"
             >
               <span>🤝</span>
               <span>Görev Alan</span>
-              {role === 'gorevli' && (
+              {selectedRole === 'gorevli' && (
                 <svg className="ml-auto h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
