@@ -13,10 +13,15 @@ export function middleware(request: NextRequest) {
   // URL'den path'i al
   const path = request.nextUrl.pathname;
 
+  // Ana sayfa için kontrol yapma
+  if (path === '/') {
+    return NextResponse.next();
+  }
+
   // Public routes - her zaman erişilebilir
-  if (path === '/' || path === '/giris' || path === '/kayit') {
-    // Eğer token varsa ve ana sayfadaysa rol seçimine yönlendir
-    if (token && path === '/') {
+  if (path === '/giris' || path === '/kayit') {
+    // Eğer token varsa ve giriş/kayıt sayfalarındaysa rol seçimine yönlendir
+    if (token) {
       return NextResponse.redirect(new URL('/rol-sec', request.url));
     }
     return NextResponse.next();
@@ -31,7 +36,22 @@ export function middleware(request: NextRequest) {
   if (
     path.startsWith('/_next') ||
     path.startsWith('/static') ||
-    path.includes('favicon.ico')
+    path.includes('favicon.ico') ||
+    path.includes('.svg') ||
+    path.includes('.png') ||
+    path.includes('.jpg') ||
+    path.includes('.jpeg') ||
+    path.includes('.gif')
+  ) {
+    return NextResponse.next();
+  }
+
+  // Footer sayfaları için kontrol yapma
+  if (
+    path === '/gizlilik' ||
+    path === '/kvkk' ||
+    path === '/sss' ||
+    path === '/iletisim'
   ) {
     return NextResponse.next();
   }
