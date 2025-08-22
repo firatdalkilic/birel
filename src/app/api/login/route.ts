@@ -58,16 +58,19 @@ export async function POST(req: Request) {
       { expiresIn: '7d' }
     );
 
+    // Kullanıcı bilgilerini hazırla
+    const userData = {
+      id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.lastSelectedRole
+    };
+
     return NextResponse.json({
       message: 'Giriş başarılı',
       token,
-      user: {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        lastSelectedRole: user.lastSelectedRole,
-      },
+      user: userData
     });
   } catch (error: any) {
     console.error('API hatası:', error);
