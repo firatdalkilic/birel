@@ -26,7 +26,13 @@ export default function RoleSelectionPage() {
     localStorage.setItem('hasSelectedInitialRole', 'true');
     setRole(role);
     setHasSelectedInitialRole(true);
-    router.push(`/dashboard/${role}`);
+    
+    // Doğru dashboard'a yönlendir
+    if (role === 'gorevli') {
+      router.push('/dashboard/gorevli');
+    } else {
+      router.push('/dashboard/gorevveren');
+    }
   };
 
   if (!isAuthenticated || hasSelectedInitialRole) {
