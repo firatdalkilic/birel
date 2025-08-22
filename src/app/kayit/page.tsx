@@ -20,6 +20,7 @@ export default function RegisterPage() {
     firstName: "",
     lastName: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
   });
@@ -57,6 +58,16 @@ export default function RegisterPage() {
       newErrors.push({
         field: 'email',
         message: 'Geçerli bir e-posta adresi giriniz'
+      });
+    }
+
+    // Telefon numarası kontrolü
+    const phoneRegex = /^(\+90|0)?[5][0-9]{9}$/;
+    const cleanPhone = formData.phone.replace(/\D/g, '');
+    if (!phoneRegex.test(cleanPhone)) {
+      newErrors.push({
+        field: 'phone',
+        message: 'Geçerli bir telefon numarası giriniz (5XX XXX XX XX)'
       });
     }
 
@@ -220,6 +231,41 @@ export default function RegisterPage() {
                 />
                 {getFieldError('email') && (
                   <p className="mt-1 text-xs text-red-600">{getFieldError('email')}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Telefon */}
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                Telefon
+              </label>
+              <div className="mt-1 relative">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-gray-500 sm:text-sm">+90</span>
+                </span>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  autoComplete="tel"
+                  placeholder="5XX XXX XX XX"
+                  value={formData.phone}
+                  onChange={(e) => {
+                    // Sadece rakamları al
+                    const value = e.target.value.replace(/\D/g, '');
+                    // Maksimum 10 rakam
+                    const truncated = value.slice(0, 10);
+                    // Formatlı gösterim: 5XX XXX XX XX
+                    const formatted = truncated.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+                    setFormData({ ...formData, phone: formatted });
+                  }}
+                  className={`appearance-none block w-full pl-12 pr-3 py-2 border rounded-md shadow-sm placeholder-gray-400 
+                    focus:outline-none focus:ring-[#FFC107] focus:border-[#FFC107] sm:text-sm
+                    ${getFieldError('phone') ? 'border-red-300' : 'border-gray-300'}`}
+                />
+                {getFieldError('phone') && (
+                  <p className="mt-1 text-xs text-red-600">{getFieldError('phone')}</p>
                 )}
               </div>
             </div>

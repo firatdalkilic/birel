@@ -48,12 +48,33 @@ export async function POST(req: Request) {
       );
     }
 
-    // E-posta kontrolü
-    const existingUser = await User.findOne({ email: body.email });
-    if (existingUser) {
-      console.log('E-posta zaten kullanımda:', body.email);
+    // Telefon numarası formatı kontrolü
+    const phoneRegex = /^(\+90|0)?[5][0-9]{9}$/;
+    const cleanPhone = body.phone.replace(/\D/g, '');
+    if (!phoneRegex.test(cleanPhone)) {
       return NextResponse.json(
-        { error: 'Bu e-posta adresi zaten kullanımda' },
+        { error: 'Geçerli bir telefon numarası giriniz (5XX XXX XX XX)' },
+        { status: 400 }
+      );
+    }
+
+    // E-posta ve telefon kontrolü
+    const existingUser = await User.findOne({ 
+      $or: [
+        { email: body.email },
+        { phone: `+90${cleanPhone}` }
+      ]
+    });
+
+    if (existingUser) {
+      const errorMessage = existingUser.email === body.email
+        ? 'Bu e-posta adresi zaten kullanımda'
+        : 'Bu telefon numarası zaten kullanımda';
+      
+      console.log(`${errorMessage}:`, existingUser.email === body.email ? body.email : body.phone);
+      
+      return NextResponse.json(
+        { error: errorMessage },
         { status: 400 }
       );
     }
@@ -67,6 +88,7 @@ export async function POST(req: Request) {
       firstName: body.firstName,
       lastName: body.lastName,
       email: body.email,
+      phone: `+90${cleanPhone}`,
       passwordHash,
       lastSelectedRole: null,
       roles: [],
