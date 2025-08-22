@@ -11,7 +11,6 @@ export default function RolSecici() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { selectedRole, setRole } = useAuthStore();
 
-  // Dropdown dışına tıklandığında menüyü kapat
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -34,9 +33,9 @@ export default function RolSecici() {
 
     // Yönlendirme
     if (newRole === 'gorevveren') {
-      router.push('/gorev-ver');
+      router.push('/dashboard/gorevveren');
     } else {
-      router.push('/gorevler');
+      router.push('/dashboard/gorevli');
     }
   };
 
