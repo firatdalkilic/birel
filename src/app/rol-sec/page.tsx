@@ -18,18 +18,27 @@ export default function RoleSelectionPage() {
     // Daha önce rol seçimi yapılmışsa dashboard'a yönlendir
     if (hasSelectedInitialRole) {
       const selectedRole = localStorage.getItem('selectedRole');
-      router.push(`/dashboard/${selectedRole}`);
+      if (selectedRole) {
+        router.push(`/dashboard/${selectedRole}`);
+      }
     }
   }, [isAuthenticated, hasSelectedInitialRole, router]);
 
-  const handleRoleSelect = (role: 'gorevveren' | 'gorevli') => {
-    localStorage.setItem('selectedRole', role);
-    localStorage.setItem('hasSelectedInitialRole', 'true');
-    setRole(role);
-    setHasSelectedInitialRole(true);
-    
-    // Direkt olarak ilgili dashboard'a yönlendir
-    router.push(`/dashboard/${role}`);
+  const handleRoleSelect = async (role: 'gorevveren' | 'gorevli') => {
+    try {
+      // Cookie'leri ayarla
+      document.cookie = `selectedRole=${role}; path=/; max-age=${7 * 24 * 60 * 60}`;
+      document.cookie = `hasSelectedInitialRole=true; path=/; max-age=${7 * 24 * 60 * 60}`;
+      
+      // Store'u güncelle
+      setRole(role);
+      setHasSelectedInitialRole(true);
+      
+      // Yönlendir
+      router.push(`/dashboard/${role}`);
+    } catch (error) {
+      console.error('Rol seçimi hatası:', error);
+    }
   };
 
   if (!isAuthenticated || hasSelectedInitialRole) {

@@ -47,7 +47,6 @@ export async function POST(req: Request) {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        role: user.lastSelectedRole
       },
       process.env.JWT_SECRET || 'default-secret',
       { expiresIn: '7d' }
@@ -59,7 +58,6 @@ export async function POST(req: Request) {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      role: user.lastSelectedRole
     };
 
     // Response oluştur
@@ -78,24 +76,14 @@ export async function POST(req: Request) {
       path: '/',
     };
 
-    // Token ve kullanıcı bilgilerini cookie olarak ayarla
+    // Token'ı HttpOnly cookie olarak ayarla
     response.cookies.set('token', token, cookieOptions);
+
+    // Kullanıcı bilgilerini normal cookie olarak ayarla
     response.cookies.set('user', JSON.stringify(userData), {
       ...cookieOptions,
-      httpOnly: false // Client-side'dan erişilebilir olması için
+      httpOnly: false // Client-side erişim için
     });
-
-    // Rol seçimi için cookie'ler
-    if (user.lastSelectedRole) {
-      response.cookies.set('selectedRole', user.lastSelectedRole, {
-        ...cookieOptions,
-        httpOnly: false
-      });
-      response.cookies.set('hasSelectedInitialRole', 'true', {
-        ...cookieOptions,
-        httpOnly: false
-      });
-    }
 
     return response;
 
