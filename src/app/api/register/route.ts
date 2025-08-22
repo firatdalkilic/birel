@@ -21,12 +21,29 @@ export async function POST(req: Request) {
     await dbConnect();
     
     const body = await req.json();
-    console.log('Gelen veri:', body);
+    console.log('Gelen veri:', { ...body, password: '[GİZLENDİ]' });
 
     // Validasyon
-    if (!body.email || !body.password || !body.firstName || !body.lastName || !body.phone) {
+    if (!body.email || !body.password || !body.firstName || !body.lastName) {
       return NextResponse.json(
         { error: 'Tüm zorunlu alanları doldurun' },
+        { status: 400 }
+      );
+    }
+
+    // E-posta formatı kontrolü
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(body.email)) {
+      return NextResponse.json(
+        { error: 'Geçerli bir e-posta adresi giriniz' },
+        { status: 400 }
+      );
+    }
+
+    // Şifre uzunluğu kontrolü
+    if (body.password.length < 6) {
+      return NextResponse.json(
+        { error: 'Şifreniz en az 6 karakter olmalıdır' },
         { status: 400 }
       );
     }
@@ -50,7 +67,6 @@ export async function POST(req: Request) {
       firstName: body.firstName,
       lastName: body.lastName,
       email: body.email,
-      phone: body.phone,
       passwordHash,
       lastSelectedRole: null,
       roles: [],
