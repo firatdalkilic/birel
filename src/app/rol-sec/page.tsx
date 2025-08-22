@@ -1,40 +1,54 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
+
+// Cookie yardımcı fonksiyonları
+const getCookie = (name: string): string | null => {
+  if (typeof document === 'undefined') return null;
+  
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  return null;
+};
+
+const setCookie = (name: string, value: string, maxAge: number) => {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${name}=${value}; path=/; max-age=${maxAge}`;
+};
 
 export default function RoleSelectionPage() {
   const router = useRouter();
   const { isAuthenticated, hasSelectedInitialRole, setRole, setHasSelectedInitialRole } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Cookie kontrolü
-    const token = document.cookie.includes('token=');
+    // Token kontrolü
+    const token = getCookie('token');
     if (!token) {
       window.location.href = '/giris';
       return;
     }
 
     // Daha önce rol seçimi yapılmışsa dashboard'a yönlendir
-    const hasSelectedRole = document.cookie.includes('hasSelectedInitialRole=true');
+    const hasSelectedRole = getCookie('hasSelectedInitialRole') === 'true';
     if (hasSelectedRole) {
-      const selectedRoleCookie = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('selectedRole='));
-      const selectedRole = selectedRoleCookie ? selectedRoleCookie.split('=')[1] : null;
-      
+      const selectedRole = getCookie('selectedRole');
       if (selectedRole) {
         window.location.href = `/dashboard/${selectedRole}`;
       }
     }
+
+    setIsLoading(false);
   }, []);
 
   const handleRoleSelect = (role: 'gorevveren' | 'gorevli') => {
     // Cookie'leri ayarla
     const maxAge = 7 * 24 * 60 * 60; // 7 gün
-    document.cookie = `selectedRole=${role}; path=/; max-age=${maxAge}`;
-    document.cookie = `hasSelectedInitialRole=true; path=/; max-age=${maxAge}`;
+    setCookie('selectedRole', role, maxAge);
+    setCookie('hasSelectedInitialRole', 'true', maxAge);
     
     // Store'u güncelle
     setRole(role);
@@ -44,11 +58,8 @@ export default function RoleSelectionPage() {
     window.location.href = `/dashboard/${role}`;
   };
 
-  // Token yoksa veya rol seçilmişse sayfa gösterme
-  const token = document.cookie.includes('token=');
-  const hasSelectedRole = document.cookie.includes('hasSelectedInitialRole=true');
-  
-  if (!token || hasSelectedRole) {
+  // Yükleme durumunda veya token/rol seçimi durumunda boş sayfa göster
+  if (isLoading || !getCookie('token') || getCookie('hasSelectedInitialRole') === 'true') {
     return null;
   }
 
