@@ -13,15 +13,15 @@ export function middleware(request: NextRequest) {
   // URL'den path'i al
   const path = request.nextUrl.pathname;
 
-  // Ana sayfa için kontrol yapma
-  if (path === '/') {
-    return NextResponse.next();
-  }
-
   // Public routes - her zaman erişilebilir
-  if (path === '/giris' || path === '/kayit') {
+  const publicRoutes = ['/', '/giris', '/kayit', '/gizlilik', '/kvkk', '/sss', '/iletisim'];
+  if (publicRoutes.includes(path)) {
+    // Eğer token varsa ve ana sayfadaysa rol seçimine yönlendir
+    if (token && path === '/') {
+      return NextResponse.redirect(new URL('/rol-sec', request.url));
+    }
     // Eğer token varsa ve giriş/kayıt sayfalarındaysa rol seçimine yönlendir
-    if (token) {
+    if (token && (path === '/giris' || path === '/kayit')) {
       return NextResponse.redirect(new URL('/rol-sec', request.url));
     }
     return NextResponse.next();
@@ -46,20 +46,19 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Footer sayfaları için kontrol yapma
-  if (
-    path === '/gizlilik' ||
-    path === '/kvkk' ||
-    path === '/sss' ||
-    path === '/iletisim'
-  ) {
-    return NextResponse.next();
-  }
-
-  // Token yoksa giriş sayfasına yönlendir
+  // Token yoksa ve korumalı bir sayfaya erişmeye çalışıyorsa giriş sayfasına yönlendir
   if (!token) {
     console.log('Token yok, giriş sayfasına yönlendiriliyor');
     return NextResponse.redirect(new URL('/giris', request.url));
+  }
+
+  // Rol seçim sayfası kontrolü
+  if (path === '/rol-sec') {
+    // Token yoksa giriş sayfasına yönlendir
+    if (!token) {
+      return NextResponse.redirect(new URL('/giris', request.url));
+    }
+    return NextResponse.next();
   }
 
   // Token varsa devam et
