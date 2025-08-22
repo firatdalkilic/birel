@@ -3,20 +3,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
-import { cookies } from 'next/headers';
 
 export async function POST(req: Request) {
-  // CORS headers
-  if (req.method === 'OPTIONS') {
-    return new NextResponse(null, {
-      status: 200,
-      headers: {
-        'Access-Control-Allow-Methods': 'POST',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
-    });
-  }
-
   try {
     console.log('Giriş API çağrısı başladı');
     await dbConnect();
@@ -59,9 +47,21 @@ export async function POST(req: Request) {
       { expiresIn: '7d' }
     );
 
-    // Cookie ayarla
-    const cookieStore = cookies();
-    cookieStore.set('token', token, {
+    // Response oluştur
+    const response = NextResponse.json({
+      message: 'Giriş başarılı',
+      token,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.lastSelectedRole
+      }
+    });
+
+    // Token'ı cookie olarak ayarla
+    response.cookies.set('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -69,20 +69,8 @@ export async function POST(req: Request) {
       path: '/',
     });
 
-    // Kullanıcı bilgilerini hazırla
-    const userData = {
-      id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      role: user.lastSelectedRole
-    };
+    return response;
 
-    return NextResponse.json({
-      message: 'Giriş başarılı',
-      token,
-      user: userData
-    });
   } catch (error: any) {
     console.error('API hatası:', error);
     return NextResponse.json(
