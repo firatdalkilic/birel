@@ -17,7 +17,8 @@ export default function RoleSelectionPage() {
 
     // Daha önce rol seçimi yapılmışsa dashboard'a yönlendir
     if (hasSelectedInitialRole) {
-      router.push('/dashboard');
+      const selectedRole = localStorage.getItem('selectedRole');
+      router.push(`/dashboard/${selectedRole}`);
     }
   }, [isAuthenticated, hasSelectedInitialRole, router]);
 
@@ -27,12 +28,8 @@ export default function RoleSelectionPage() {
     setRole(role);
     setHasSelectedInitialRole(true);
     
-    // Doğru dashboard'a yönlendir
-    if (role === 'gorevli') {
-      router.push('/dashboard/gorevli');
-    } else {
-      router.push('/dashboard/gorevveren');
-    }
+    // Direkt olarak ilgili dashboard'a yönlendir
+    router.push(`/dashboard/${role}`);
   };
 
   if (!isAuthenticated || hasSelectedInitialRole) {
