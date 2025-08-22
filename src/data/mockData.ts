@@ -87,6 +87,37 @@ export const mockTasks: Task[] = [
   }
 ];
 
+export const mockOffers: TaskOffer[] = [
+  {
+    id: '1',
+    taskId: '1',
+    taskTitle: 'Yaşlı amcaya market alışverişi',
+    offeredBy: {
+      id: '2',
+      name: 'Mehmet Demir',
+      rating: 4.7
+    },
+    offeredAmount: 90,
+    status: 'pending',
+    message: 'Yardımcı olmaktan mutluluk duyarım',
+    createdAt: '2024-02-20T10:30:00Z'
+  },
+  {
+    id: '2',
+    taskId: '2',
+    taskTitle: 'İlaç alımı ve teslimat',
+    offeredBy: {
+      id: '3',
+      name: 'Ayşe Kaya',
+      rating: 4.9
+    },
+    offeredAmount: 50,
+    status: 'accepted',
+    message: 'Hemen yola çıkabilirim',
+    createdAt: '2024-02-19T16:00:00Z'
+  }
+];
+
 export const mockReviews: Review[] = [
   {
     id: '1',
