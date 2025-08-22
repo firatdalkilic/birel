@@ -3,13 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
-import { FaTasks, FaUserCircle } from "react-icons/fa";
+import { FaUserCircle } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
 import RolSecici from "./RolSecici";
 
 export default function Header() {
   const router = useRouter();
-  const { isAuthenticated, selectedRole, checkAuth, logout } = useAuthStore();
+  const { isAuthenticated, checkAuth, logout } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
@@ -46,13 +46,6 @@ export default function Header() {
               </>
             ) : (
               <>
-                <a 
-                  href={`/dashboard/${selectedRole}`}
-                  className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
-                >
-                  <FaTasks className="text-lg" />
-                  <span className="hidden sm:inline">Görevlerim</span>
-                </a>
                 <a 
                   href="/profil" 
                   className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
