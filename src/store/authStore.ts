@@ -22,21 +22,6 @@ interface AuthState {
   logout: () => void;
 }
 
-// Cookie yardımcı fonksiyonları
-const getCookie = (name: string): string | null => {
-  if (typeof document === 'undefined') return null;
-  
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
-  return null;
-};
-
-const deleteCookie = (name: string) => {
-  if (typeof document === 'undefined') return;
-  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
-};
-
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
@@ -46,60 +31,40 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       
       setAuth: (isAuth) => set({ isAuthenticated: isAuth }),
-      setRole: (role) => {
-        if (typeof document !== 'undefined') {
-          document.cookie = `selectedRole=${role}; path=/; max-age=${7 * 24 * 60 * 60}`;
-        }
-        set({ selectedRole: role });
-      },
-      setUser: (user) => {
-        if (user && typeof document !== 'undefined') {
-          document.cookie = `user=${JSON.stringify(user)}; path=/; max-age=${7 * 24 * 60 * 60}`;
-        }
-        set({ user });
-      },
-      setHasSelectedInitialRole: (value) => {
-        if (typeof document !== 'undefined') {
-          document.cookie = `hasSelectedInitialRole=${value}; path=/; max-age=${7 * 24 * 60 * 60}`;
-        }
-        set({ hasSelectedInitialRole: value });
-      },
+      setRole: (role) => set({ selectedRole: role }),
+      setUser: (user) => set({ user }),
+      setHasSelectedInitialRole: (value) => set({ hasSelectedInitialRole: value }),
       
       checkAuth: () => {
-        if (typeof document === 'undefined') return;
+        if (typeof window === 'undefined') return;
         
-        const token = getCookie('token');
-        const userStr = getCookie('user');
-        const selectedRole = getCookie('selectedRole');
-        const hasSelectedRole = getCookie('hasSelectedInitialRole');
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('selectedRole');
+        const userStr = localStorage.getItem('user');
+        const hasSelectedRole = localStorage.getItem('hasSelectedInitialRole');
         
         set({
           isAuthenticated: !!token,
-          selectedRole: selectedRole,
+          selectedRole: role,
           user: userStr ? JSON.parse(userStr) : null,
           hasSelectedInitialRole: hasSelectedRole === 'true'
         });
       },
 
       logout: () => {
-        if (typeof document === 'undefined') return;
+        if (typeof window === 'undefined') return;
         
-        // Cookie'leri temizle
-        deleteCookie('token');
-        deleteCookie('user');
-        deleteCookie('selectedRole');
-        deleteCookie('hasSelectedInitialRole');
+        localStorage.removeItem('token');
+        localStorage.removeItem('selectedRole');
+        localStorage.removeItem('user');
+        localStorage.removeItem('hasSelectedInitialRole');
         
-        // State'i temizle
         set({
           isAuthenticated: false,
           selectedRole: null,
           user: null,
           hasSelectedInitialRole: false
         });
-
-        // Sayfayı yenile
-        window.location.href = '/';
       }
     }),
     {

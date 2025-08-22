@@ -1,65 +1,38 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
-
-// Cookie yardımcı fonksiyonları
-const getCookie = (name: string): string | null => {
-  if (typeof document === 'undefined') return null;
-  
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
-  return null;
-};
-
-const setCookie = (name: string, value: string, maxAge: number) => {
-  if (typeof document === 'undefined') return;
-  document.cookie = `${name}=${value}; path=/; max-age=${maxAge}`;
-};
 
 export default function RoleSelectionPage() {
   const router = useRouter();
   const { isAuthenticated, hasSelectedInitialRole, setRole, setHasSelectedInitialRole } = useAuthStore();
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Token kontrolü
-    const token = getCookie('token');
-    if (!token) {
-      window.location.href = '/giris';
+    // Giriş yapmamış kullanıcıları yönlendir
+    if (!isAuthenticated) {
+      router.push('/giris');
       return;
     }
 
     // Daha önce rol seçimi yapılmışsa dashboard'a yönlendir
-    const hasSelectedRole = getCookie('hasSelectedInitialRole') === 'true';
-    if (hasSelectedRole) {
-      const selectedRole = getCookie('selectedRole');
-      if (selectedRole) {
-        window.location.href = `/dashboard/${selectedRole}`;
-      }
+    if (hasSelectedInitialRole) {
+      const selectedRole = localStorage.getItem('selectedRole');
+      router.push(`/dashboard/${selectedRole}`);
     }
-
-    setIsLoading(false);
-  }, []);
+  }, [isAuthenticated, hasSelectedInitialRole, router]);
 
   const handleRoleSelect = (role: 'gorevveren' | 'gorevli') => {
-    // Cookie'leri ayarla
-    const maxAge = 7 * 24 * 60 * 60; // 7 gün
-    setCookie('selectedRole', role, maxAge);
-    setCookie('hasSelectedInitialRole', 'true', maxAge);
-    
-    // Store'u güncelle
+    localStorage.setItem('selectedRole', role);
+    localStorage.setItem('hasSelectedInitialRole', 'true');
     setRole(role);
     setHasSelectedInitialRole(true);
     
-    // Yönlendir
-    window.location.href = `/dashboard/${role}`;
+    // Direkt olarak ilgili dashboard'a yönlendir
+    router.push(`/dashboard/${role}`);
   };
 
-  // Yükleme durumunda veya token/rol seçimi durumunda boş sayfa göster
-  if (isLoading || !getCookie('token') || getCookie('hasSelectedInitialRole') === 'true') {
+  if (!isAuthenticated || hasSelectedInitialRole) {
     return null;
   }
 

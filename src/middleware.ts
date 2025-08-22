@@ -28,49 +28,12 @@ export function middleware(request: NextRequest) {
   
   // Public route kontrolü
   if (publicRoutes.includes(path)) {
-    // Giriş yapmış kullanıcılar giriş/kayıt sayfalarına giremez
-    if (token && (path === '/giris' || path === '/kayit')) {
-      // Rol seçimi yapılmış mı kontrol et
-      const hasSelectedRole = request.cookies.get('hasSelectedInitialRole')?.value === 'true';
-      const selectedRole = request.cookies.get('selectedRole')?.value;
-      
-      if (hasSelectedRole && selectedRole) {
-        return NextResponse.redirect(new URL(`/dashboard/${selectedRole}`, request.url));
-      }
-      return NextResponse.redirect(new URL('/rol-sec', request.url));
-    }
     return NextResponse.next();
   }
 
-  // Korumalı route'lar için token kontrolü
-  if (!token && path !== '/') {
+  // Token yoksa giriş sayfasına yönlendir
+  if (!token) {
     return NextResponse.redirect(new URL('/giris', request.url));
-  }
-
-  // Rol seçim sayfası kontrolü
-  if (path === '/rol-sec') {
-    if (!token) {
-      return NextResponse.redirect(new URL('/giris', request.url));
-    }
-    // Rol seçimi yapılmışsa dashboard'a yönlendir
-    const hasSelectedRole = request.cookies.get('hasSelectedInitialRole')?.value === 'true';
-    const selectedRole = request.cookies.get('selectedRole')?.value;
-    if (hasSelectedRole && selectedRole) {
-      return NextResponse.redirect(new URL(`/dashboard/${selectedRole}`, request.url));
-    }
-    return NextResponse.next();
-  }
-
-  // Dashboard route kontrolü
-  if (path.startsWith('/dashboard/')) {
-    if (!token) {
-      return NextResponse.redirect(new URL('/giris', request.url));
-    }
-    const hasSelectedRole = request.cookies.get('hasSelectedInitialRole')?.value === 'true';
-    if (!hasSelectedRole) {
-      return NextResponse.redirect(new URL('/rol-sec', request.url));
-    }
-    return NextResponse.next();
   }
 
   // Token varsa devam et
