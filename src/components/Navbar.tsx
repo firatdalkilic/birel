@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { FaBars, FaTimes, FaUser, FaSignOutAlt, FaExchangeAlt } from "react-icons/fa";
+import { FaBars, FaTimes, FaUser, FaSignOutAlt } from "react-icons/fa";
 import { useAuthStore } from "@/store/authStore";
+import RolSecici from "./RolSecici";
 
 export default function Navbar() {
   const router = useRouter();
@@ -55,12 +56,7 @@ export default function Navbar() {
             {isAuthenticated ? (
               <>
                 <NavLink href="/profil">Profilim</NavLink>
-                <NavLink href="/rol-sec">
-                  <div className="flex items-center gap-2">
-                    <FaExchangeAlt className="w-4 h-4" />
-                    <span>Rol Seç</span>
-                  </div>
-                </NavLink>
+                <RolSecici />
                 <button
                   onClick={handleLogout}
                   className="flex items-center gap-2 text-gray-700 hover:text-red-500 transition-colors"
@@ -120,12 +116,7 @@ export default function Navbar() {
                   {isAuthenticated ? (
                     <>
                       <NavLink href="/profil">Profilim</NavLink>
-                      <NavLink href="/rol-sec">
-                        <div className="flex items-center gap-2">
-                          <FaExchangeAlt className="w-4 h-4" />
-                          <span>Rol Seç</span>
-                        </div>
-                      </NavLink>
+                      <RolSecici />
                       <button
                         onClick={handleLogout}
                         className="flex items-center gap-2 text-gray-700 hover:text-red-500 transition-colors"

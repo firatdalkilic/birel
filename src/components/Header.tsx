@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { FaUserCircle } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
-import RolSecici from "./RolSecici";
 
 export default function Header() {
   const router = useRouter();
@@ -63,7 +62,6 @@ export default function Header() {
                   <FaUserCircle className="text-lg" />
                   <span className="hidden sm:inline">Profilim</span>
                 </a>
-                <RolSecici />
                 <button
                   onClick={handleLogout}
                   className="text-red-600 hover:text-red-700 flex items-center gap-2"
