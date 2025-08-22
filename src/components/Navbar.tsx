@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { FaBars, FaTimes, FaUser, FaSignOutAlt, FaExchangeAlt } from "react-icons/fa";
+import { useAuthStore } from "@/store/authStore";
 
 interface User {
   firstName: string;
@@ -14,35 +15,11 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const userStr = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('user='));
-    if (userStr) {
-      try {
-        const userJson = decodeURIComponent(userStr.split('=')[1]);
-        setUser(JSON.parse(userJson));
-      } catch (error) {
-        console.error('User cookie parse error:', error);
-      }
-    }
-  }, []);
+  const { isAuthenticated, selectedRole, user, logout } = useAuthStore();
 
   const handleLogout = () => {
-    // Cookie'leri temizle
-    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    document.cookie = 'user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    document.cookie = 'selectedRole=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    document.cookie = 'hasSelectedInitialRole=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    
-    // State'i temizle
-    setUser(null);
-    setIsMenuOpen(false);
-    
-    // Ana sayfaya yönlendir
-    window.location.href = '/';
+    logout();
+    router.push('/');
   };
 
   const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
@@ -70,9 +47,9 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-8">
             <NavLink href="/">Ana Sayfa</NavLink>
             
-            {user ? (
+            {isAuthenticated ? (
               <>
-                <NavLink href="/dashboard">Görevlerim</NavLink>
+                <NavLink href={`/dashboard/${selectedRole}`}>Görevlerim</NavLink>
                 <NavLink href="/profil">Profilim</NavLink>
                 <NavLink href="/rol-sec">
                   <div className="flex items-center gap-2">
@@ -136,9 +113,9 @@ export default function Navbar() {
                 <div className="flex flex-col space-y-6">
                   <NavLink href="/">Ana Sayfa</NavLink>
                   
-                  {user ? (
+                  {isAuthenticated ? (
                     <>
-                      <NavLink href="/dashboard">Görevlerim</NavLink>
+                      <NavLink href={`/dashboard/${selectedRole}`}>Görevlerim</NavLink>
                       <NavLink href="/profil">Profilim</NavLink>
                       <NavLink href="/rol-sec">
                         <div className="flex items-center gap-2">
