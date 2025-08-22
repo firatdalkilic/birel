@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { mockTasks } from '@/data/mockData';
 import { useAuthStore } from '@/store/authStore';
 import StarRating from '@/components/StarRating';
+import { Task } from '@/types/task';
 
 interface UserStats {
   totalTasks: number;
@@ -21,6 +21,7 @@ interface UserStats {
 export default function GorevVerenDashboard() {
   const router = useRouter();
   const { isAuthenticated, selectedRole, user } = useAuthStore();
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [stats, setStats] = useState<UserStats>({
     totalTasks: 0,
     activeTasks: 0,
@@ -41,20 +42,21 @@ export default function GorevVerenDashboard() {
   }, [isAuthenticated, selectedRole, router]);
 
   useEffect(() => {
-    // TODO: Backend'den kullanıcı istatistiklerini al
-    const fetchStats = async () => {
+    // TODO: Backend'den kullanıcı istatistiklerini ve görevlerini al
+    const fetchUserData = async () => {
       try {
         // Şimdilik boş bırakıyoruz, backend hazır olduğunda burayı dolduracağız
         // const response = await fetch('/api/user/stats');
         // const data = await response.json();
-        // setStats(data);
+        // setStats(data.stats);
+        // setTasks(data.tasks);
       } catch (error) {
-        console.error('İstatistikler alınamadı:', error);
+        console.error('Veriler alınamadı:', error);
       }
     };
 
     if (isAuthenticated && user) {
-      fetchStats();
+      fetchUserData();
     }
   }, [isAuthenticated, user]);
 
@@ -129,8 +131,8 @@ export default function GorevVerenDashboard() {
           </div>
         </div>
 
-        {mockTasks.length === 0 ? (
-          <div className="text-center py-12">
+        {tasks.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-lg shadow-sm">
             <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
@@ -150,7 +152,7 @@ export default function GorevVerenDashboard() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockTasks.map((task) => (
+            {tasks.map((task) => (
               <div key={task.id} className="bg-white p-6 rounded-lg shadow-sm">
                 <div className="flex items-start justify-between">
                   <div>
