@@ -24,18 +24,6 @@ export default function Navbar() {
     }
   };
 
-  const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
-    <Link
-      href={href}
-      className={`text-gray-700 hover:text-[#FFC107] transition-colors ${
-        pathname === href ? 'text-[#FFC107] font-medium' : ''
-      }`}
-      onClick={() => setIsMenuOpen(false)}
-    >
-      {children}
-    </Link>
-  );
-
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-sm">
       <div className="container-custom">
@@ -51,14 +39,28 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            {!isAuthenticated && <NavLink href="/">Ana Sayfa</NavLink>}
+            {!isAuthenticated && (
+              <Link 
+                href="/" 
+                className={`text-gray-700 hover:text-[#FFC107] transition-colors ${
+                  pathname === '/' ? 'text-[#FFC107] font-medium' : ''
+                }`}
+              >
+                Ana Sayfa
+              </Link>
+            )}
             
             {isAuthenticated ? (
               <>
-                <NavLink href="/profil" className="flex items-center gap-2">
+                <Link 
+                  href="/profil" 
+                  className={`text-gray-700 hover:text-[#FFC107] transition-colors flex items-center gap-2 ${
+                    pathname === '/profil' ? 'text-[#FFC107] font-medium' : ''
+                  }`}
+                >
                   <FaUserCircle className="text-lg" />
                   <span>Profilim</span>
-                </NavLink>
+                </Link>
                 <RolSecici />
                 <button
                   onClick={handleLogout}
@@ -70,11 +72,17 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <NavLink href="/giris">Giriş Yap</NavLink>
+                <Link 
+                  href="/giris"
+                  className={`text-gray-700 hover:text-[#FFC107] transition-colors ${
+                    pathname === '/giris' ? 'text-[#FFC107] font-medium' : ''
+                  }`}
+                >
+                  Giriş Yap
+                </Link>
                 <Link
                   href="/kayit"
                   className="bg-[#FFC107] text-[#0A2540] px-4 py-2 rounded-lg hover:bg-[#FFB000] transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
                 >
                   Kayıt Ol
                 </Link>
@@ -114,14 +122,30 @@ export default function Navbar() {
               </div>
               <div className="flex-1 px-4 py-8">
                 <div className="flex flex-col space-y-6">
-                  {!isAuthenticated && <NavLink href="/">Ana Sayfa</NavLink>}
+                  {!isAuthenticated && (
+                    <Link 
+                      href="/" 
+                      className={`text-gray-700 hover:text-[#FFC107] transition-colors ${
+                        pathname === '/' ? 'text-[#FFC107] font-medium' : ''
+                      }`}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Ana Sayfa
+                    </Link>
+                  )}
                   
                   {isAuthenticated ? (
                     <>
-                      <NavLink href="/profil" className="flex items-center gap-2">
+                      <Link 
+                        href="/profil" 
+                        className={`text-gray-700 hover:text-[#FFC107] transition-colors flex items-center gap-2 ${
+                          pathname === '/profil' ? 'text-[#FFC107] font-medium' : ''
+                        }`}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
                         <FaUserCircle className="text-lg" />
                         <span>Profilim</span>
-                      </NavLink>
+                      </Link>
                       <RolSecici />
                       <button
                         onClick={handleLogout}
@@ -133,7 +157,15 @@ export default function Navbar() {
                     </>
                   ) : (
                     <>
-                      <NavLink href="/giris">Giriş Yap</NavLink>
+                      <Link 
+                        href="/giris"
+                        className={`text-gray-700 hover:text-[#FFC107] transition-colors ${
+                          pathname === '/giris' ? 'text-[#FFC107] font-medium' : ''
+                        }`}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Giriş Yap
+                      </Link>
                       <Link
                         href="/kayit"
                         className="bg-[#FFC107] text-[#0A2540] px-4 py-2 rounded-lg hover:bg-[#FFB000] transition-colors text-center"
