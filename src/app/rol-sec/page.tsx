@@ -9,18 +9,22 @@ export default function RoleSelectionPage() {
   const { isAuthenticated, hasSelectedInitialRole, setRole, setHasSelectedInitialRole } = useAuthStore();
 
   useEffect(() => {
-    // Giriş yapmamış kullanıcıları yönlendir
-    if (!isAuthenticated) {
+    // Token kontrolü
+    const token = localStorage.getItem('token');
+    if (!token) {
       router.push('/giris');
       return;
     }
 
     // Daha önce rol seçimi yapılmışsa dashboard'a yönlendir
-    if (hasSelectedInitialRole) {
+    const hasSelectedRole = localStorage.getItem('hasSelectedInitialRole');
+    if (hasSelectedRole === 'true') {
       const selectedRole = localStorage.getItem('selectedRole');
-      router.push(`/dashboard/${selectedRole}`);
+      if (selectedRole) {
+        router.push(`/dashboard/${selectedRole}`);
+      }
     }
-  }, [isAuthenticated, hasSelectedInitialRole, router]);
+  }, [router]);
 
   const handleRoleSelect = (role: 'gorevveren' | 'gorevli') => {
     localStorage.setItem('selectedRole', role);
@@ -32,7 +36,11 @@ export default function RoleSelectionPage() {
     router.push(`/dashboard/${role}`);
   };
 
-  if (!isAuthenticated || hasSelectedInitialRole) {
+  // Token yoksa veya rol seçilmişse sayfa gösterme
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const hasSelectedRole = typeof window !== 'undefined' ? localStorage.getItem('hasSelectedInitialRole') === 'true' : false;
+  
+  if (!token || hasSelectedRole) {
     return null;
   }
 

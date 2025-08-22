@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
 
 const CATEGORIES = [
   {
@@ -34,25 +35,30 @@ const CATEGORIES = [
 
 export default function Home() {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, setAuth, setUser } = useAuthStore();
 
   useEffect(() => {
     // Token kontrolü
     const token = localStorage.getItem('token');
     if (token) {
-      setIsAuthenticated(true);
-      
-      // Role göre yönlendirme
-      const lastSelectedRole = localStorage.getItem('selectedRole');
-      if (!lastSelectedRole) {
-        router.push('/rol-sec');
-      } else if (lastSelectedRole === 'gorevveren') {
-        router.push('/dashboard/gorevveren');
-      } else if (lastSelectedRole === 'gorevli') {
-        router.push('/dashboard/gorevli');
+      // Kullanıcı bilgilerini kontrol et
+      const user = localStorage.getItem('user');
+      if (user) {
+        setAuth(true);
+        setUser(JSON.parse(user));
+        
+        // Role göre yönlendirme
+        const lastSelectedRole = localStorage.getItem('selectedRole');
+        const hasSelectedInitialRole = localStorage.getItem('hasSelectedInitialRole');
+        
+        if (hasSelectedInitialRole === 'true' && lastSelectedRole) {
+          router.push(`/dashboard/${lastSelectedRole}`);
+        } else if (token) {
+          router.push('/rol-sec');
+        }
       }
     }
-  }, [router]);
+  }, [router, setAuth, setUser]);
 
   // Eğer kullanıcı giriş yapmışsa ve yönlendirme bekleniyorsa boş sayfa göster
   if (isAuthenticated) {
