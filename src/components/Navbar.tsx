@@ -17,6 +17,12 @@ export default function Navbar() {
     router.push('/');
   };
 
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (isAuthenticated) {
+      e.preventDefault();
+    }
+  };
+
   const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
     <Link
       href={href}
@@ -34,13 +40,17 @@ export default function Navbar() {
       <div className="container-custom">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
+          <Link 
+            href="/" 
+            className="flex items-center cursor-pointer"
+            onClick={handleLogoClick}
+          >
             <span className="text-2xl font-bold text-[#FFC107]">Bir El</span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <NavLink href="/">Ana Sayfa</NavLink>
+            {!isAuthenticated && <NavLink href="/">Ana Sayfa</NavLink>}
             
             {isAuthenticated ? (
               <>
@@ -105,7 +115,7 @@ export default function Navbar() {
               </div>
               <div className="flex-1 px-4 py-8">
                 <div className="flex flex-col space-y-6">
-                  <NavLink href="/">Ana Sayfa</NavLink>
+                  {!isAuthenticated && <NavLink href="/">Ana Sayfa</NavLink>}
                   
                   {isAuthenticated ? (
                     <>

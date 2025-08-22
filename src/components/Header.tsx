@@ -20,11 +20,21 @@ export default function Header() {
     router.push('/');
   };
 
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (isAuthenticated) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <header className="py-4 bg-white shadow-sm">
       <div className="container-custom">
         <nav className="flex items-center justify-between">
-          <a href="/" className="text-2xl font-bold text-[#0A2540]">
+          <a 
+            href="/" 
+            className="text-2xl font-bold text-[#0A2540] cursor-pointer"
+            onClick={handleLogoClick}
+          >
             Bir El
           </a>
 
