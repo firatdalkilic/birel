@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { FaBars, FaTimes, FaUser, FaSignOutAlt } from "react-icons/fa";
+import { FaBars, FaTimes, FaUserCircle, FaSignOutAlt } from "react-icons/fa";
 import { useAuthStore } from "@/store/authStore";
 import RolSecici from "./RolSecici";
 
@@ -11,7 +11,7 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated, selectedRole, logout } = useAuthStore();
+  const { isAuthenticated, logout } = useAuthStore();
 
   const handleLogout = () => {
     logout();
@@ -55,7 +55,10 @@ export default function Navbar() {
             
             {isAuthenticated ? (
               <>
-                <NavLink href="/profil">Profilim</NavLink>
+                <NavLink href="/profil" className="flex items-center gap-2">
+                  <FaUserCircle className="text-lg" />
+                  <span>Profilim</span>
+                </NavLink>
                 <RolSecici />
                 <button
                   onClick={handleLogout}
@@ -115,7 +118,10 @@ export default function Navbar() {
                   
                   {isAuthenticated ? (
                     <>
-                      <NavLink href="/profil">Profilim</NavLink>
+                      <NavLink href="/profil" className="flex items-center gap-2">
+                        <FaUserCircle className="text-lg" />
+                        <span>Profilim</span>
+                      </NavLink>
                       <RolSecici />
                       <button
                         onClick={handleLogout}
