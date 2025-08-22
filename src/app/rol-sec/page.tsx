@@ -6,20 +6,32 @@ import { useAuthStore } from "@/store/authStore";
 
 export default function RoleSelectionPage() {
   const router = useRouter();
-  const { isAuthenticated, setRole } = useAuthStore();
+  const { isAuthenticated, hasSelectedInitialRole, setRole, setHasSelectedInitialRole } = useAuthStore();
 
   useEffect(() => {
     // Giriş yapmamış kullanıcıları yönlendir
     if (!isAuthenticated) {
       router.push('/giris');
+      return;
     }
-  }, [isAuthenticated, router]);
+
+    // Daha önce rol seçimi yapılmışsa dashboard'a yönlendir
+    if (hasSelectedInitialRole) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, hasSelectedInitialRole, router]);
 
   const handleRoleSelect = (role: 'gorevveren' | 'gorevli') => {
     localStorage.setItem('selectedRole', role);
+    localStorage.setItem('hasSelectedInitialRole', 'true');
     setRole(role);
+    setHasSelectedInitialRole(true);
     router.push(`/dashboard/${role}`);
   };
+
+  if (!isAuthenticated || hasSelectedInitialRole) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -62,4 +74,4 @@ export default function RoleSelectionPage() {
       </div>
     </div>
   );
-} 
+}

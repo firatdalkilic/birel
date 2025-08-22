@@ -31,12 +31,8 @@ export default function RolSecici() {
     setShowNotification(true);
     setTimeout(() => setShowNotification(false), 2000);
 
-    // Yönlendirme
-    if (newRole === 'gorevveren') {
-      router.push('/dashboard/gorevveren');
-    } else {
-      router.push('/dashboard/gorevli');
-    }
+    // Direkt olarak ilgili dashboard'a yönlendir
+    router.push(`/dashboard/${newRole}`);
   };
 
   // Eğer kullanıcı giriş yapmamışsa bileşeni gösterme
