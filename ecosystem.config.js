@@ -1,4 +1,4 @@
-# Production deployment için PM2 config
+// Production deployment için PM2 config
 module.exports = {
   apps: [
     {
