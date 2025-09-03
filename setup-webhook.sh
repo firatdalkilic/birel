@@ -1,18 +1,15 @@
 #!/bin/bash
 
-# Bir El App - Otomatik Deployment Sistemi Kurulumu
-# Bu script webhook tabanlı CI/CD sistemi kurar
+# Bir El App - Webhook Kurulum Script'i
+# Bu script webhook sunucusunu kurar ve yapılandırır
 
 set -e
 
-echo "🚀 Otomatik Deployment Sistemi Kuruluyor..."
+echo "🚀 Webhook Sistemi Kuruluyor..."
 
 # Environment variables
-APP_NAME="birel-app"
-WEBHOOK_NAME="birel-webhook"
-DEPLOY_PATH="/var/www/birelapp"
-WEBHOOK_PATH="/var/www/webhook"
-WEBHOOK_PORT=9000
+WEBHOOK_PATH="/opt/birel-webhook"
+WEBHOOK_PORT=3200
 WEBHOOK_SECRET=$(openssl rand -hex 32)
 
 # Colors for output
@@ -38,7 +35,7 @@ print_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
 
-# Check if running as root
+# Check if running as deploy user
 if [[ $EUID -eq 0 ]]; then
    print_error "Bu script root olarak çalıştırılmamalıdır!"
    exit 1
@@ -61,97 +58,62 @@ fi
 print_status "PM2 kuruluyor..."
 sudo npm install -g pm2
 
-# Webhook kurulumu
-print_status "Webhook kuruluyor..."
-sudo npm install -g webhook
-
 # Gerekli dizinler oluşturma
 print_status "Gerekli dizinler oluşturuluyor..."
 sudo mkdir -p $WEBHOOK_PATH
-sudo mkdir -p $WEBHOOK_PATH/hooks
-sudo mkdir -p $WEBHOOK_PATH/logs
 sudo chown -R $USER:$USER $WEBHOOK_PATH
 
-# Webhook konfigürasyonu oluşturma
-print_status "Webhook konfigürasyonu oluşturuluyor..."
-cat > $WEBHOOK_PATH/hooks.json << EOF
-[
-  {
-    "id": "birel-deploy",
-    "execute-command": "$DEPLOY_PATH/deploy.sh",
-    "command-working-directory": "$DEPLOY_PATH",
-    "pass-arguments-to-command": [
-      {
-        "source": "payload",
-        "name": "ref"
-      },
-      {
-        "source": "payload",
-        "name": "repository.name"
-      },
-      {
-        "source": "payload",
-        "name": "pusher.name"
-      }
-    ],
-    "trigger-rule": {
-      "and": [
-        {
-          "match": {
-            "type": "payload-hash-sha256",
-            "secret": "$WEBHOOK_SECRET",
-            "parameter": {
-              "source": "request",
-              "name": "X-Hub-Signature-256"
-            }
-          }
-        },
-        {
-          "match": {
-            "type": "value",
-            "value": "refs/heads/main",
-            "parameter": {
-              "source": "payload",
-              "name": "ref"
-            }
-          }
-        }
-      ]
-    }
-  }
-]
+# Webhook server dosyasını kopyala
+print_status "Webhook server dosyası kopyalanıyor..."
+cp webhook-server.js $WEBHOOK_PATH/
+
+# Package.json oluştur
+print_status "Package.json oluşturuluyor..."
+cat > $WEBHOOK_PATH/package.json << EOF
+{
+  "name": "birel-webhook",
+  "version": "1.0.0",
+  "description": "Bir El Webhook Server",
+  "main": "webhook-server.js",
+  "scripts": {
+    "start": "node webhook-server.js",
+    "dev": "nodemon webhook-server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": ["webhook", "deployment", "ci-cd"],
+  "author": "Bir El Team",
+  "license": "MIT"
+}
 EOF
 
-# Webhook systemd service oluşturma
-print_status "Webhook systemd service oluşturuluyor..."
-sudo tee /etc/systemd/system/webhook.service > /dev/null << EOF
-[Unit]
-Description=Webhook Server
-After=network.target
+# Bağımlılıkları yükle
+print_status "Webhook bağımlılıkları yükleniyor..."
+cd $WEBHOOK_PATH
+npm install --production
 
-[Service]
-Type=simple
-User=$USER
-WorkingDirectory=$WEBHOOK_PATH
-ExecStart=/usr/bin/webhook -hooks hooks.json -port $WEBHOOK_PORT -verbose
-Restart=always
-RestartSec=10
-StandardOutput=append:/var/log/webhook/webhook.log
-StandardError=append:/var/log/webhook/webhook.log
-
-[Install]
-WantedBy=multi-user.target
+# Environment dosyası oluştur
+print_status "Environment dosyası oluşturuluyor..."
+cat > $WEBHOOK_PATH/.env << EOF
+NODE_ENV=production
+WEBHOOK_PORT=$WEBHOOK_PORT
+WEBHOOK_SECRET=$WEBHOOK_SECRET
 EOF
 
-# Log dizini oluşturma
-sudo mkdir -p /var/log/webhook
-sudo chown -R $USER:$USER /var/log/webhook
+# Webhook secret'ını ana .env dosyasına da ekle
+print_status "Webhook secret ana .env dosyasına ekleniyor..."
+echo "WEBHOOK_SECRET=$WEBHOOK_SECRET" >> /var/www/birel/.env
 
-# Webhook service'i etkinleştirme
-print_status "Webhook service etkinleştiriliyor..."
-sudo systemctl daemon-reload
-sudo systemctl enable webhook
-sudo systemctl start webhook
+# PM2 ile webhook'u başlat
+print_status "PM2 ile webhook başlatılıyor..."
+pm2 start ecosystem.config.js --only birel-webhook
+pm2 save
 
 # Nginx reverse proxy konfigürasyonu
 print_status "Nginx reverse proxy konfigürasyonu oluşturuluyor..."
@@ -175,33 +137,29 @@ server {
 }
 EOF
 
-# Nginx site'ını etkinleştirme
+# Nginx site'ını etkinleştir
 sudo ln -sf /etc/nginx/sites-available/webhook /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 
 # Firewall ayarları
 print_status "Firewall ayarları yapılıyor..."
-sudo ufw allow 9000/tcp
+sudo ufw allow $WEBHOOK_PORT/tcp
 sudo ufw reload
-
-# Webhook secret'ını kaydetme
-echo "WEBHOOK_SECRET=$WEBHOOK_SECRET" | sudo tee -a /etc/environment
 
 print_status "✅ Webhook sistemi kuruldu!"
 print_info "Webhook URL: http://webhook.birelapp.com/webhooks/birel-deploy"
 print_info "Webhook Secret: $WEBHOOK_SECRET"
-print_info "Webhook Logs: /var/log/webhook/webhook.log"
-print_info "Service Status: sudo systemctl status webhook"
+print_info "Webhook Port: $WEBHOOK_PORT"
+print_info "Webhook Path: $WEBHOOK_PATH"
 
 echo ""
 print_status "📋 Sonraki adımlar:"
 echo "1. GitHub'da webhook ayarlarını yapın"
-echo "2. deploy.sh script'ini güncelleyin"
-echo "3. Test deployment yapın"
+echo "2. Test deployment yapın"
 echo ""
 print_status "🔧 Yardımcı komutlar:"
-echo "- Webhook durumu: sudo systemctl status webhook"
-echo "- Webhook logları: tail -f /var/log/webhook/webhook.log"
-echo "- Webhook restart: sudo systemctl restart webhook"
+echo "- Webhook durumu: pm2 status birel-webhook"
+echo "- Webhook logları: pm2 logs birel-webhook"
+echo "- Webhook restart: pm2 restart birel-webhook"
 echo "- Nginx restart: sudo systemctl restart nginx"

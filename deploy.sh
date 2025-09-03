@@ -6,17 +6,21 @@
 set -e
 
 # Environment variables
-APP_NAME="birel-app"
-DEPLOY_PATH="/var/www/birelapp"
-BACKUP_PATH="/var/backups/birelapp"
-LOG_PATH="/var/log/birelapp"
-WEBHOOK_LOG="/var/log/webhook/deploy.log"
+APP_NAME="birel-web"
+WEBHOOK_NAME="birel-webhook"
+DEPLOY_PATH="/var/www/birel"
+RELEASES_PATH="$DEPLOY_PATH/releases"
+CURRENT_PATH="$DEPLOY_PATH/current"
+BACKUP_PATH="/home/deploy/backups"
+LOG_PATH="/home/deploy/logs"
 
 # Webhook parametreleri
 REF="$1"
 REPO_NAME="$2"
 PUSHER_NAME="$3"
 DEPLOY_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+RELEASE_PATH="$RELEASES_PATH/$TIMESTAMP"
 
 # Colors for output
 RED='\033[0;31m'
@@ -30,7 +34,7 @@ log_message() {
     local level="$1"
     local message="$2"
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    echo "[$timestamp] [$level] $message" | tee -a "$WEBHOOK_LOG"
+    echo "[$timestamp] [$level] $message" | tee -a "$LOG_PATH/deploy.log"
 }
 
 print_status() {
@@ -56,7 +60,7 @@ print_info() {
 # Deployment başlangıç logu
 log_message "DEPLOY_START" "Deployment başlatıldı - Ref: $REF, Repo: $REPO_NAME, Pusher: $PUSHER_NAME"
 
-# Check if running as root
+# Check if running as deploy user
 if [[ $EUID -eq 0 ]]; then
    print_error "Bu script root olarak çalıştırılmamalıdır!"
    exit 1
@@ -70,21 +74,12 @@ fi
 
 # Create necessary directories
 print_status "Gerekli dizinler kontrol ediliyor..."
-sudo mkdir -p $BACKUP_PATH
-sudo mkdir -p $LOG_PATH
-sudo chown -R $USER:$USER $BACKUP_PATH
-sudo chown -R $USER:$USER $LOG_PATH
+mkdir -p $RELEASES_PATH
+mkdir -p $BACKUP_PATH
+mkdir -p $LOG_PATH
 
-# Backup current version
-if [ -d "$DEPLOY_PATH/.next" ]; then
-    print_status "Mevcut versiyon yedekleniyor..."
-    BACKUP_NAME="backup-$(date +%Y%m%d-%H%M%S)"
-    cp -r $DEPLOY_PATH $BACKUP_PATH/$BACKUP_NAME
-    log_message "BACKUP" "Backup oluşturuldu: $BACKUP_NAME"
-fi
-
-# Navigate to deploy directory
-cd $DEPLOY_PATH
+# Navigate to current release
+cd $CURRENT_PATH
 
 # Check if git repository is clean
 if [ -n "$(git status --porcelain)" ]; then
@@ -102,6 +97,17 @@ git clean -fd
 COMMIT_HASH=$(git rev-parse --short HEAD)
 COMMIT_MESSAGE=$(git log -1 --pretty=%B)
 log_message "GIT_PULL" "Commit: $COMMIT_HASH - $COMMIT_MESSAGE"
+
+# Create new release directory
+print_status "Yeni release dizini oluşturuluyor..."
+mkdir -p $RELEASE_PATH
+
+# Copy files to new release
+print_status "Dosyalar yeni release'e kopyalanıyor..."
+cp -r . $RELEASE_PATH/
+
+# Navigate to new release
+cd $RELEASE_PATH
 
 # Install dependencies
 print_status "Bağımlılıklar yükleniyor..."
@@ -127,12 +133,16 @@ fi
 
 # Set proper permissions
 print_status "Dosya izinleri ayarlanıyor..."
-sudo chown -R www-data:www-data $DEPLOY_PATH
-sudo chmod -R 755 $DEPLOY_PATH
+sudo chown -R www-data:www-data $RELEASE_PATH
+sudo chmod -R 755 $RELEASE_PATH
 
-# Restart PM2 process
+# Update current symlink
+print_status "Current symlink güncelleniyor..."
+ln -sfn $RELEASE_PATH $CURRENT_PATH
+
+# Reload PM2 process
 print_status "PM2 process yeniden başlatılıyor..."
-pm2 reload $APP_NAME || pm2 start ecosystem.config.js --env production
+pm2 reload $APP_NAME
 
 # Check if the application is running
 sleep 5
@@ -152,7 +162,7 @@ HEALTH_CHECK_RETRIES=3
 HEALTH_CHECK_DELAY=5
 
 for i in $(seq 1 $HEALTH_CHECK_RETRIES); do
-    if curl -f http://localhost:3000/health > /dev/null 2>&1; then
+    if curl -f http://localhost:3000/api/health > /dev/null 2>&1; then
         print_status "✅ Health check başarılı! (Deneme: $i/$HEALTH_CHECK_RETRIES)"
         log_message "HEALTH_CHECK" "Health check başarılı - Deneme: $i"
         break
@@ -177,11 +187,11 @@ else
     log_message "NGINX_RELOAD_ERROR" "Nginx yeniden yükleme başarısız"
 fi
 
-# Cleanup old backups (keep last 10)
-print_status "Eski yedekler temizleniyor..."
-cd $BACKUP_PATH
-ls -t | tail -n +11 | xargs -r rm -rf
-log_message "CLEANUP" "Eski yedekler temizlendi"
+# Cleanup old releases (keep last 5)
+print_status "Eski release'ler temizleniyor..."
+cd $RELEASES_PATH
+ls -t | tail -n +6 | xargs -r rm -rf
+log_message "CLEANUP" "Eski release'ler temizlendi"
 
 # Deployment completion log
 log_message "DEPLOY_SUCCESS" "Deployment başarıyla tamamlandı - Commit: $COMMIT_HASH"
@@ -190,10 +200,11 @@ print_status "🎉 Deployment tamamlandı!"
 print_info "Commit: $COMMIT_HASH"
 print_info "Mesaj: $COMMIT_MESSAGE"
 print_info "Pusher: $PUSHER_NAME"
+print_info "Release: $RELEASE_PATH"
 print_info "Uygulama: https://birelapp.com"
 print_info "PM2 Status: pm2 status"
 print_info "Logs: pm2 logs $APP_NAME"
-print_info "Deploy Log: $WEBHOOK_LOG"
+print_info "Deploy Log: $LOG_PATH/deploy.log"
 
 # Send notification (optional)
 if command -v curl &> /dev/null; then

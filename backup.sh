@@ -6,10 +6,11 @@
 set -e
 
 # Environment variables
-APP_NAME="birel-app"
-DEPLOY_PATH="/var/www/birelapp"
-BACKUP_PATH="/var/backups/birelapp"
-BACKUP_LOG="/var/log/birelapp/backup.log"
+APP_NAME="birel-web"
+DEPLOY_PATH="/var/www/birel"
+CURRENT_PATH="$DEPLOY_PATH/current"
+BACKUP_PATH="/home/deploy/backups"
+BACKUP_LOG="/home/deploy/logs/backup.log"
 DATE=$(date +%Y%m%d_%H%M%S)
 
 # Colors for output
@@ -50,18 +51,18 @@ print_info() {
 # Backup başlangıç logu
 log_message "BACKUP_START" "Backup işlemi başlatıldı - Tarih: $DATE"
 
-# Check if running as root
+# Check if running as deploy user
 if [[ $EUID -eq 0 ]]; then
    print_error "Bu script root olarak çalıştırılmamalıdır!"
    exit 1
 fi
 
 # Create backup directory if not exists
-sudo mkdir -p $BACKUP_PATH
-sudo chown -R $USER:$USER $BACKUP_PATH
+mkdir -p $BACKUP_PATH
+mkdir -p $(dirname $BACKUP_LOG)
 
-# Navigate to deploy directory
-cd $DEPLOY_PATH
+# Navigate to current release
+cd $CURRENT_PATH
 
 # Get current commit info
 COMMIT_HASH=$(git rev-parse --short HEAD)
@@ -75,6 +76,7 @@ tar -czf "$BACKUP_PATH/$APP_BACKUP_NAME" \
     --exclude='.git' \
     --exclude='.next' \
     --exclude='*.log' \
+    --exclude='.env*' \
     .
 
 if [ $? -eq 0 ]; then
@@ -108,8 +110,7 @@ fi
 print_status "Log dosyaları yedekleniyor..."
 LOGS_BACKUP_NAME="logs_backup_${DATE}.tar.gz"
 tar -czf "$BACKUP_PATH/$LOGS_BACKUP_NAME" \
-    /var/log/birelapp \
-    /var/log/webhook \
+    /home/deploy/logs \
     /var/log/nginx/birelapp.*.log
 
 if [ $? -eq 0 ]; then
@@ -162,11 +163,11 @@ cat >> "$MANIFEST_FILE" << EOF
 }
 EOF
 
-# Cleanup old backups (keep last 30 days)
+# Cleanup old backups (keep last 7 days)
 print_status "Eski yedekler temizleniyor..."
-find $BACKUP_PATH -name "*.tar.gz" -mtime +30 -delete
-find $BACKUP_PATH -name "*.gz" -mtime +30 -delete
-find $BACKUP_PATH -name "backup_manifest_*.json" -mtime +30 -delete
+find $BACKUP_PATH -name "*.tar.gz" -mtime +7 -delete
+find $BACKUP_PATH -name "*.gz" -mtime +7 -delete
+find $BACKUP_PATH -name "backup_manifest_*.json" -mtime +7 -delete
 
 # Calculate backup size
 TOTAL_SIZE=$(du -sh "$BACKUP_PATH" | cut -f1)
@@ -181,10 +182,3 @@ print_info "Mesaj: $COMMIT_MESSAGE"
 print_info "Toplam boyut: $TOTAL_SIZE"
 print_info "Backup dizini: $BACKUP_PATH"
 print_info "Manifest: $MANIFEST_FILE"
-
-# Send notification (optional)
-if command -v curl &> /dev/null; then
-    # Slack/Discord webhook notification (isteğe bağlı)
-    # curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"💾 Bir El App backup completed! Size: $TOTAL_SIZE\"}" $SLACK_WEBHOOK_URL
-    true
-fi

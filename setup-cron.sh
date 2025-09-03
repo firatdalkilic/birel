@@ -8,9 +8,9 @@ set -e
 echo "🚀 Cron Job Sistemi Kuruluyor..."
 
 # Environment variables
-BACKUP_SCRIPT="/var/www/birelapp/backup.sh"
-LOG_ROTATE_SCRIPT="/var/www/birelapp/log-rotate.sh"
-MAINTENANCE_SCRIPT="/var/www/birelapp/maintenance.sh"
+BACKUP_SCRIPT="/var/www/birel/backup.sh"
+LOG_ROTATE_SCRIPT="/var/www/birel/log-rotate.sh"
+MAINTENANCE_SCRIPT="/var/www/birel/maintenance.sh"
 
 # Colors for output
 RED='\033[0;31m'
@@ -35,7 +35,7 @@ print_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
 
-# Check if running as root
+# Check if running as deploy user
 if [[ $EUID -eq 0 ]]; then
    print_error "Bu script root olarak çalıştırılmamalıdır!"
    exit 1
@@ -51,7 +51,7 @@ cat > $LOG_ROTATE_SCRIPT << 'EOF'
 #!/bin/bash
 
 # Log rotate script
-LOG_DIRS=("/var/log/birelapp" "/var/log/webhook" "/var/log/nginx")
+LOG_DIRS=("/home/deploy/logs" "/var/log/nginx")
 
 for dir in "${LOG_DIRS[@]}"; do
     if [ -d "$dir" ]; then
@@ -60,7 +60,7 @@ for dir in "${LOG_DIRS[@]}"; do
     fi
 done
 
-echo "$(date): Log rotate completed" >> /var/log/birelapp/cron.log
+echo "$(date): Log rotate completed" >> /home/deploy/logs/cron.log
 EOF
 
 chmod +x $LOG_ROTATE_SCRIPT
@@ -71,7 +71,7 @@ cat > $MAINTENANCE_SCRIPT << 'EOF'
 #!/bin/bash
 
 # Maintenance script
-echo "$(date): Starting maintenance..." >> /var/log/birelapp/cron.log
+echo "$(date): Starting maintenance..." >> /home/deploy/logs/cron.log
 
 # Clean npm cache
 npm cache clean --force
@@ -80,13 +80,13 @@ npm cache clean --force
 pm2 flush
 
 # Restart PM2 processes if needed
-pm2 restart birel-app
+pm2 restart birel-web
 
 # Clean old files
-find /var/www/birelapp -name "*.tmp" -delete
-find /var/www/birelapp -name "*.log" -size +50M -delete
+find /var/www/birel -name "*.tmp" -delete
+find /var/www/birel -name "*.log" -size +50M -delete
 
-echo "$(date): Maintenance completed" >> /var/log/birelapp/cron.log
+echo "$(date): Maintenance completed" >> /home/deploy/logs/cron.log
 EOF
 
 chmod +x $MAINTENANCE_SCRIPT
@@ -98,14 +98,14 @@ CURRENT_CRON=$(crontab -l 2>/dev/null || echo "")
 # Create new crontab entries
 print_status "Cron job'lar ekleniyor..."
 
-# Daily backup at 2 AM
-BACKUP_CRON="0 2 * * * $BACKUP_SCRIPT >> /var/log/birelapp/cron.log 2>&1"
+# Daily backup at 3:30 AM
+BACKUP_CRON="30 3 * * * $BACKUP_SCRIPT >> /home/deploy/backup.log 2>&1"
 
 # Log rotate every 6 hours
 LOG_ROTATE_CRON="0 */6 * * * $LOG_ROTATE_SCRIPT"
 
-# Weekly maintenance on Sunday at 3 AM
-MAINTENANCE_CRON="0 3 * * 0 $MAINTENANCE_SCRIPT"
+# Weekly maintenance on Sunday at 4 AM
+MAINTENANCE_CRON="0 4 * * 0 $MAINTENANCE_SCRIPT"
 
 # Check if entries already exist
 if echo "$CURRENT_CRON" | grep -q "$BACKUP_SCRIPT"; then
@@ -132,18 +132,18 @@ echo "$CURRENT_CRON" | crontab -
 print_status "✅ Cron job'lar başarıyla eklendi!"
 
 print_info "📋 Eklenen Cron Job'lar:"
-echo "  - Günlük backup: 02:00 (her gün)"
+echo "  - Günlük backup: 03:30 (her gün)"
 echo "  - Log rotate: Her 6 saatte bir"
-echo "  - Maintenance: 03:00 (her Pazar)"
+echo "  - Maintenance: 04:00 (her Pazar)"
 
 print_info "📁 Script konumları:"
 echo "  - Backup: $BACKUP_SCRIPT"
 echo "  - Log rotate: $LOG_ROTATE_SCRIPT"
 echo "  - Maintenance: $MAINTENANCE_SCRIPT"
 
-print_info "📊 Log dosyası: /var/log/birelapp/cron.log"
+print_info "📊 Log dosyası: /home/deploy/backup.log"
 
 print_status "🔧 Yardımcı komutlar:"
 echo "  - Cron job'ları listele: crontab -l"
-echo "  - Cron log'larını görüntüle: tail -f /var/log/birelapp/cron.log"
+echo "  - Cron log'larını görüntüle: tail -f /home/deploy/backup.log"
 echo "  - Cron service durumu: sudo systemctl status cron"

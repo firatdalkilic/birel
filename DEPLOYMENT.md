@@ -5,35 +5,82 @@ Bu dokümantasyon, GitHub Webhook tabanlı otomatik deployment sisteminin kurulu
 ## 🚀 Sistem Genel Bakış
 
 ### Bileşenler:
-- **Webhook Server**: GitHub push'larını dinler
-- **Deploy Script**: Otomatik deployment işlemini gerçekleştirir
-- **Backup System**: Otomatik yedekleme sistemi
+- **Webhook Server**: GitHub push'larını dinler (Port: 3200)
+- **Deploy Script**: Release tabanlı deployment
+- **Backup System**: Otomatik yedekleme sistemi (7 gün rotasyon)
 - **Health Check**: Uygulama sağlık kontrolü
 - **Log Management**: Kapsamlı log yönetimi
+- **PM2 Cluster Mode**: Yüksek performans
 
 ### Akış:
 1. GitHub'a push yapılır
-2. Webhook server push'u yakalar
+2. Webhook server push'u yakalar (HMAC doğrulama)
 3. Deploy script çalıştırılır
-4. Uygulama build edilir ve deploy edilir
-5. Health check yapılır
-6. Backup oluşturulur
+4. Yeni release oluşturulur
+5. Uygulama build edilir ve deploy edilir
+6. Health check yapılır
+7. Current symlink güncellenir
+8. Eski release'ler temizlenir
 
 ## 📋 Kurulum Adımları
 
-### 1. Sunucuda Webhook Kurulumu
+### 1. Deploy Kullanıcısı Oluşturma
 
 ```bash
-# Sunucuya SSH ile bağlan
-ssh ubuntu@185.99.199.83
+# Deploy kullanıcısı oluştur
+sudo adduser deploy
+sudo usermod -aG sudo deploy
 
-# Webhook kurulum script'ini çalıştır
-cd /var/www/birelapp
+# SSH anahtarı ekle
+sudo mkdir -p /home/deploy/.ssh
+sudo cp ~/.ssh/authorized_keys /home/deploy/.ssh/
+sudo chown -R deploy:deploy /home/deploy/.ssh
+sudo chmod 700 /home/deploy/.ssh
+sudo chmod 600 /home/deploy/.ssh/authorized_keys
+```
+
+### 2. Proje Dizinleri Oluşturma
+
+```bash
+# Ana dizinler
+sudo mkdir -p /var/www/birel
+sudo mkdir -p /var/www/birel/releases
+sudo mkdir -p /var/www/birel/current
+sudo mkdir -p /home/deploy/logs
+sudo mkdir -p /home/deploy/backups
+
+# İzinleri ayarla
+sudo chown -R deploy:deploy /var/www/birel
+sudo chown -R deploy:deploy /home/deploy
+```
+
+### 3. Proje Dosyalarını Kopyalama
+
+```bash
+# Proje dosyalarını kopyala
+cd /var/www/birel
+sudo -u deploy git clone https://github.com/firatdalkilic/birel.git temp
+sudo -u deploy cp -r temp/* .
+sudo -u deploy cp -r temp/.* . 2>/dev/null || true
+sudo rm -rf temp
+
+# Current symlink oluştur
+sudo -u deploy ln -sfn /var/www/birel /var/www/birel/current
+```
+
+### 4. Webhook Sistemi Kurulumu
+
+```bash
+# Deploy kullanıcısına geç
+sudo su - deploy
+
+# Webhook kurulumu
+cd /var/www/birel
 chmod +x setup-webhook.sh
 ./setup-webhook.sh
 ```
 
-### 2. Cron Job Kurulumu
+### 5. Cron Job Kurulumu
 
 ```bash
 # Cron job'ları kur
@@ -41,51 +88,45 @@ chmod +x setup-cron.sh
 ./setup-cron.sh
 ```
 
-### 3. GitHub Webhook Ayarları
-
-1. GitHub repository'ye git: https://github.com/firatdalkilic/birel
-2. **Settings** > **Webhooks** > **Add webhook**
-3. **Payload URL**: `http://webhook.birelapp.com/webhooks/birel-deploy`
-4. **Content type**: `application/json`
-5. **Secret**: (setup-webhook.sh'den alınan secret)
-6. **Events**: `Just the push event`
-7. **Active**: ✅
-8. **Add webhook** butonuna tıkla
-
-### 4. Test Deployment
+### 6. PM2 ile Uygulamayı Başlatma
 
 ```bash
-# Test için küçük bir değişiklik yap
-echo "# Test deployment" >> README.md
-git add README.md
-git commit -m "Test deployment"
-git push origin main
+# PM2 ile başlat
+pm2 start ecosystem.config.js
+pm2 save
+pm2 startup
 ```
 
 ## 🔧 Konfigürasyon Dosyaları
 
 ### Webhook Konfigürasyonu
-- **Dosya**: `/var/www/webhook/hooks.json`
-- **Port**: 9000
+- **Dosya**: `/opt/birel-webhook/webhook-server.js`
+- **Port**: 3200
 - **URL**: `http://webhook.birelapp.com/webhooks/birel-deploy`
 
 ### PM2 Ecosystem
 - **Dosya**: `ecosystem.config.js`
-- **Cluster Mode**: Aktif
-- **Memory Limit**: 1GB
-- **Auto Restart**: Aktif
+- **Web App**: `birel-web` (cluster mode)
+- **Webhook**: `birel-webhook` (fork mode)
 
-### Nginx Konfigürasyonu
-- **Ana Site**: `nginx.conf`
-- **Webhook**: `/etc/nginx/sites-available/webhook`
+### Release Yapısı
+```
+/var/www/birel/
+├── releases/
+│   ├── 20241201_143022/
+│   ├── 20241201_150145/
+│   └── ...
+├── current -> releases/20241201_150145/
+└── ...
+```
 
 ## 📊 Monitoring ve Logs
 
 ### Log Dosyaları
-- **Deploy Logs**: `/var/log/webhook/deploy.log`
-- **App Logs**: `/var/log/birelapp/`
-- **Webhook Logs**: `/var/log/webhook/webhook.log`
-- **Nginx Logs**: `/var/log/nginx/`
+- **Deploy Logs**: `/home/deploy/logs/deploy.log`
+- **Backup Logs**: `/home/deploy/backup.log`
+- **App Logs**: `/home/deploy/logs/birel-web-*.log`
+- **Webhook Logs**: `/home/deploy/logs/birel-webhook-*.log`
 
 ### Monitoring Komutları
 ```bash
@@ -93,55 +134,56 @@ git push origin main
 pm2 status
 
 # Webhook durumu
-sudo systemctl status webhook
+pm2 status birel-webhook
 
 # Son deployment logları
-tail -f /var/log/webhook/deploy.log
+tail -f /home/deploy/logs/deploy.log
 
 # App logları
-pm2 logs birel-app
+pm2 logs birel-web
 
 # Cron job logları
-tail -f /var/log/birelapp/cron.log
+tail -f /home/deploy/backup.log
 ```
 
 ## 🔄 Otomatik İşlemler
 
 ### Günlük Backup
-- **Zaman**: 02:00 (her gün)
+- **Zaman**: 03:30 (her gün)
 - **Script**: `backup.sh`
 - **İçerik**: App files, database, logs
+- **Rotasyon**: 7 gün
 
 ### Log Rotate
 - **Zaman**: Her 6 saatte bir
 - **İşlem**: Büyük log dosyalarını küçült
 
 ### Maintenance
-- **Zaman**: 03:00 (her Pazar)
+- **Zaman**: 04:00 (her Pazar)
 - **İşlem**: Cache temizleme, PM2 restart
 
 ## 🛠️ Manuel İşlemler
 
 ### Manuel Deployment
 ```bash
-cd /var/www/birelapp
+cd /var/www/birel
 ./deploy.sh
 ```
 
 ### Manuel Backup
 ```bash
-cd /var/www/birelapp
+cd /var/www/birel
 ./backup.sh
 ```
 
 ### Webhook Restart
 ```bash
-sudo systemctl restart webhook
+pm2 restart birel-webhook
 ```
 
 ### PM2 Restart
 ```bash
-pm2 restart birel-app
+pm2 restart birel-web
 ```
 
 ## 🔍 Sorun Giderme
@@ -149,25 +191,25 @@ pm2 restart birel-app
 ### Webhook Çalışmıyor
 ```bash
 # Webhook durumunu kontrol et
-sudo systemctl status webhook
+pm2 status birel-webhook
 
 # Logları kontrol et
-tail -f /var/log/webhook/webhook.log
+pm2 logs birel-webhook
 
 # Port'u kontrol et
-netstat -tlnp | grep 9000
+netstat -tlnp | grep 3200
 ```
 
 ### Deployment Başarısız
 ```bash
 # Deploy loglarını kontrol et
-tail -f /var/log/webhook/deploy.log
+tail -f /home/deploy/logs/deploy.log
 
 # PM2 durumunu kontrol et
 pm2 status
 
 # Build loglarını kontrol et
-pm2 logs birel-app
+pm2 logs birel-web
 ```
 
 ### Health Check Başarısız
@@ -186,10 +228,10 @@ sudo systemctl status nginx
 - Otomatik load balancing
 - Yüksek availability
 
-### Nginx Caching
-- Static dosyalar için cache
-- Gzip compression
-- Security headers
+### Release Tabanlı Deployment
+- Zero-downtime deployment
+- Kolay rollback
+- Temiz dosya yapısı
 
 ### Backup Optimizasyonu
 - Sadece gerekli dosyalar
@@ -200,11 +242,11 @@ sudo systemctl status nginx
 
 ### Webhook Security
 - HMAC-SHA256 signature verification
+- Rate limiting (100 req/15min)
 - IP whitelist (isteğe bağlı)
-- Rate limiting
 
 ### File Permissions
-- www-data user
+- deploy user
 - 755 permissions
 - Secure file ownership
 
@@ -227,11 +269,33 @@ sudo systemctl status nginx
 
 ### Backup
 - Otomatik yedekleme
-- 30 gün retention
+- 7 gün retention
 - Manifest dosyaları
+
+## 🚀 GitHub Webhook Ayarları
+
+### 1. GitHub Repository Ayarları
+1. **GitHub Repository**: https://github.com/firatdalkilic/birel
+2. **Settings** > **Webhooks** > **Add webhook**
+
+### 2. Webhook Konfigürasyonu
+- **Payload URL**: `http://webhook.birelapp.com/webhooks/birel-deploy`
+- **Content type**: `application/json`
+- **Secret**: (setup-webhook.sh'den alınan secret)
+- **Events**: `Just the push event`
+- **Active**: ✅
+
+### 3. Test Deployment
+```bash
+# Test değişikliği
+echo "# Test deployment - $(date)" >> README.md
+git add README.md
+git commit -m "Test deployment"
+git push origin main
+```
 
 ---
 
 **Son Güncelleme**: $(date)
-**Versiyon**: 1.0.0
+**Versiyon**: 2.0.0
 
