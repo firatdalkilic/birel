@@ -21,46 +21,56 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
-app.use(express.json());
 
-// HMAC doğrulama fonksiyonu
-function verifySignature(payload, signature, secret) {
-  const expectedSignature = 'sha256=' + crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex');
-  
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expectedSignature)
-  );
+// Raw body middleware for HMAC verification
+function rawBody(req, res, next) {
+  let data = [];
+  req.on('data', chunk => data.push(chunk));
+  req.on('end', () => {
+    req.rawBody = Buffer.concat(data);
+    try { 
+      req.body = JSON.parse(req.rawBody.toString() || '{}'); 
+    } catch { 
+      req.body = {}; 
+    }
+    next();
+  });
 }
 
-// Webhook endpoint
-app.post('/webhooks/birel-deploy', (req, res) => {
-  const signature = req.headers['x-hub-signature-256'];
-  const event = req.headers['x-github-event'];
-  const payload = JSON.stringify(req.body);
+// Webhook endpoint with raw body middleware
+app.post('/webhooks/birel-deploy', rawBody, (req, res) => {
+  const event = req.get('X-GitHub-Event') || '';
   
   // Log request
   console.log(`[${new Date().toISOString()}] Webhook received: ${event}`);
   
-  // HMAC doğrulama
-  if (!signature || !verifySignature(payload, signature, process.env.WEBHOOK_SECRET)) {
-    console.error('Invalid signature');
-    return res.status(401).json({ error: 'Invalid signature' });
+  // Handle ping event (test için)
+  if (event === 'ping') {
+    console.log('[WEBHOOK] ping ok:', req.body);
+    return res.status(200).json({ ok: true, event: 'ping' });
   }
-  
-  // Sadece push event'lerini kabul et
+
+  // HMAC verification
+  const signature = req.get('X-Hub-Signature-256') || '';
+  const computed = 'sha256=' + crypto.createHmac('sha256', process.env.WEBHOOK_SECRET)
+    .update(req.rawBody || '')
+    .digest('hex');
+
+  if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(computed))) {
+    console.error('[WEBHOOK] signature mismatch');
+    return res.status(401).json({ ok: false, error: 'invalid signature' });
+  }
+
+  // Handle non-push events (bilgi için logla, fail verme)
   if (event !== 'push') {
-    console.log(`Ignoring event: ${event}`);
-    return res.status(200).json({ message: 'Event ignored' });
+    console.log('[WEBHOOK] ignored event:', event);
+    return res.status(200).json({ ok: true, event });
   }
-  
+
   // Sadece main branch'i kabul et
   if (req.body.ref !== 'refs/heads/main') {
-    console.log(`Ignoring branch: ${req.body.ref}`);
-    return res.status(200).json({ message: 'Branch ignored' });
+    console.log(`[WEBHOOK] Ignoring branch: ${req.body.ref}`);
+    return res.status(200).json({ ok: true, message: 'Branch ignored' });
   }
   
   // Deploy script'ini çalıştır
@@ -74,18 +84,21 @@ app.post('/webhooks/birel-deploy', (req, res) => {
     cwd: '/var/www/birel'
   }, (error, stdout, stderr) => {
     if (error) {
-      console.error(`Deployment failed: ${error.message}`);
+      console.error(`[WEBHOOK] Deployment failed: ${error.message}`);
       return res.status(500).json({ 
+        ok: false,
         error: 'Deployment failed',
         details: error.message 
       });
     }
     
     console.log(`[${new Date().toISOString()}] Deployment completed successfully`);
-    console.log('STDOUT:', stdout);
-    if (stderr) console.log('STDERR:', stderr);
+    console.log('[WEBHOOK] STDOUT:', stdout);
+    if (stderr) console.log('[WEBHOOK] STDERR:', stderr);
     
     res.status(200).json({ 
+      ok: true,
+      started: true,
       message: 'Deployment triggered successfully',
       commit: commitHash,
       pusher: pusher
