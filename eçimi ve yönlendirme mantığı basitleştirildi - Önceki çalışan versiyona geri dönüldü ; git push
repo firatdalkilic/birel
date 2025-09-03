@@ -1,0 +1,98 @@
+[33mc07ef7f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Rol seçimi ve yönlendirme mantığı düzeltildi
+[33ma89d988[m RolSecici bileşeni ve dashboard layout düzeltildi
+[33m73e7355[m RolSecici bileşeni basitleştirildi
+[33m3fbb3ef[m Navbar'daki className prop hatası düzeltildi
+[33m085ba45[m RolSecici bileşeni yeniden düzenlendi ve Navbar'a eklendi
+[33md2cf96e[m RolSecici bileşeni Header'dan Navbar'a taşındı
+[33m4b7bfcc[m Rol seçimi linki geri eklendi ve yönlendirme mantığı düzeltildi
+[33m2c709de[m RolSecici bileşeni düzeltildi - Rol değişiminde ara sayfa gösterimi kaldırıldı
+[33md37500d[m Logo tıklanabilir ama giriş yapılmışken yönlendirme yapmayacak şekilde düzeltildi
+[33mdb763ce[m Header'dan Görevlerim kısmı kaldırıldı
+[33m7ed3ea0[m Görevlerim kısmı sistemden kaldırıldı
+[33mea8db19[m Navbar'daki Görevlerim linki localStorage'dan rol kontrolü yapacak şekilde düzeltildi
+[33md109d5d[m Önceki çalışan versiyona geri dönüldü - Sadece Navbar'daki Görevlerim linki düzeltildi
+[33me8747e9[m Auth sistemi ve rol seçimi tamamen yenilendi - Cookie ve localStorage senkronizasyonu sağlandı
+[33me339b72[m Navbar düzeltildi - Görevlerim linki seçilen role göre yönlendirme yapacak şekilde güncellendi
+[33md4f0e3b[m Önceki çalışan versiyona geri dönüldü - Yönlendirme ve auth sistemi basitleştirildi
+[33m1c914da[m Next.js Link bileşenleri yerine normal HTML a etiketleri kullanıldı - Yönlendirme sorunları düzeltildi
+[33m07f4235[m Rol seçim sayfası server-side rendering hatası düzeltildi
+[33m9543b7c[m Rol seçim sayfası ve middleware cookie tabanlı hale getirildi - localStorage kullanımı tamamen kaldırıldı
+[33m99d4694[m Auth sistemi cookie tabanlı hale getirildi - localStorage yerine cookie kullanımına geçildi
+[33m8842a9f[m Header ve Navbar'daki linkler düzeltildi - window.location.href ile yönlendirme eklendi
+[33m6c62144[m Ana sayfadaki Link bileşenleri düzeltildi - window.location.href ile yönlendirme eklendi
+[33m707d15b[m Middleware yönlendirme mantığı düzeltildi - Public route'lar için kontrol sırası değiştirildi
+[33m4915e24[m Ana sayfa ve rol seçim sayfası yönlendirme mantığı düzeltildi
+[33m83f177d[m Ana sayfa yönlendirmesi düzeltildi - Her zaman erişilebilir yapıldı
+[33m7dced6a[m Middleware yönlendirme mantığı düzeltildi - Giriş yapmamış kullanıcılar için erişim düzenlendi
+[33m1c8b238[m Ana sayfa yönlendirmesi düzeltildi - Public sayfalar middleware'den muaf tutuldu
+[33m04b99a2[m Server hatası düzeltildi - Middleware ve login API basitleştirildi
+[33mb4d1591[m Giriş işlemi düzeltildi - Cookie ve token yönetimi güncellendi
+[33m29e249c[m Yönlendirme mantığı düzeltildi - Middleware ve rol seçim sayfası güncellendi
+[33me4aec09[m Rol seçim yönlendirmeleri düzeltildi - İlk giriş ve dropdown yönlendirmeleri ayrıldı
+[33mc04187b[m Rol seçim mantığı güncellendi - İlk giriş sonrası direkt geçiş sağlandı
+[33m34f2955[m Görev veren dashboard'unda görev listesi dinamik hale getirildi
+[33m421996d[m Görevli dashboard'u güncellendi - Değerlendirme sistemi entegre edildi
+[33m1edc215[m Değerlendirme sistemi eklendi - Modal, API ve bileşenler oluşturuldu
+[33m21a2781[m Kullanıcı bilgileri dinamik hale getirildi - Mock veriler kaldırıldı
+[33mcf25078[m Görevli dashboard'unda mockOffers import hatası düzeltildi
+[33me8a5144[m Import hataları düzeltildi - mockData export/import yapısı güncellendi
+[33m7573827[m Görev veren ve görev alan panelleri geliştirildi - Dinamik veriler ve değerlendirme sistemi eklendi
+[33m96159b9[m Görev veren ve görev alan panelleri eklendi - Rol seçici ile entegre edildi
+[33m0f765cb[m RolSecici bileşeninde type hatası düzeltildi - role yerine selectedRole kullanıldı
+[33me1f6b83[m Rol seçici bileşeni eklendi - Header'a entegre edildi
+[33m65b1b1e[m placeholder düzenlendi
+[33ma9ffef2[m Modern giriş ekranı eklendi - Şifre göster/gizle, loading state ve gelişmiş hata yönetimi
+[33m5e55d5a[m Kayıt formuna telefon numarası alanı eklendi - Telefon numarası validasyonu ve benzersizlik kontrolü eklendi
+[33m10e8869[m Kayıt ekranı tamamen yenilendi - Modern tasarım ve gelişmiş validasyonlar eklendi
+[33m3a1a046[m Kayıt sistemi yeniden düzenlendi - Önce kayıt, sonra rol seçimi mantığına geçildi
+[33m2a1e7b0[m Kayıt sayfasına token kontrolü eklendi - Giriş yapmış kullanıcılar için yönlendirme düzeltildi
+[33m228cbdf[m Kayıt sistemi tamamlandı - Kayıt sayfası ve görev veren API endpoint'i eklendi
+[33m26501c7[m Add icons to navigation menu items
+[33m9e058a0[m Implement persistent auth state with Zustand persist middleware
+[33md1de4a6[m Implement global auth state management with Zustand
+[33m986659b[m Add debug logs to track auth state changes
+[33m95de5a0[m Fix auth state management and navigation flow
+[33m26a3cb9[m Update role selection page with auth state management
+[33m57f5a1e[m Add global auth state management and update login flow
+[33m4328c9f[m Update header navigation based on auth status
+[33m2c9fe02[m Update hero section buttons to show registration and login options
+[33me09c091[m Revert hero section to previous design
+[33m418b83a[m Adjust hero image width to align with container
+[33m3aa2fb0[m Update hero section gradient with precise opacity values
+[33ma235447[m Improve hero section gradient overlay for better text readability
+[33m371e2c8[m Reduce hero section gradient opacity for better image visibility
+[33m33eb63b[m Fix hero section image size and gradient
+[33mad97864[m Update home page with auth redirects
+[33mb662219[m Updated logout functionality to redirect to home page
+[33m705492b[m New navbar added with user-specific navigation
+[33med8c8b2[m User model and role selection added
+[33mf2d4c3e[m Login page and gorevli dashboard added
+[33mb8395a1[m Dashboard page added
+[33me3891e0[m Form submission and API route fixed
+[33me82c620[m Form validation improved
+[33maa16b33[m Debug logs added
+[33m233893d[m MongoDB ve JWT bağımlılıkları eklendi, environment variables ayarlandı
+[33m143ac70[m MongoDB bağlantısı ve gerekli bağımlılıklar eklendi
+[33m0778ed5[m Görevli kayıt sayfası ve API route'u eklendi
+[33mc99867b[m Hero bölümü yeniden düzenlendi: Tam ekran görsel ve daha geniş içerik alanı
+[33m2d6437b[m Hero görselinde fade efekti eklendi
+[33m5bfca1c[m Tasarım güncellendi: Yeni renk paleti ve düzen eklendi
+[33m12ad24f[m Hero görseli Unsplash'ten eklendi
+[33mfdc8ddf[m Layout düzeltildi: Header ve Footer eklendi
+[33m16256e8[m Tasarım güncellemeleri: Header, Footer ve Ana Sayfa yenilendi, yeni sayfalar eklendi
+[33mca804e9[m Tasarım güncellemeleri: Header, Footer ve Ana Sayfa yenilendi
+[33m76d5a4a[m tasarım: Anasayfa modern görünüm, görseller ve içeriklerle güncellendi
+[33mecfb316[m tasarım: Anasayfa modern görünüm ve özelliklerle güncellendi
+[33m582876b[m düzeltme: API route'ları basitleştirildi ve build hataları giderildi
+[33m1d55f2b[m düzeltme: Temel dosyalar basitleştirildi
+[33m07bf2ac[m yapılandırma: PostCSS, Tailwind ve TypeScript ayarları güncellendi
+[33m9bc53e8[m düzeltme: Next.js yapılandırması ve bağımlılıklar güncellendi
+[33mb5ec6e2[m tasarım: Anasayfa modern görünüm ve istatistik kartları eklendi
+[33m74e76be[m tasarım: Modern UI güncellemeleri ve renk paleti eklendi
+[33m528250a[m temizlik: Eski dosyalar kaldırıldı
+[33ma271a63[m UI/UX: Tüm sayfalara modern tasarım, ikonlar ve görsel iyileştirmeler eklendi
+[33mb4565d6[m Anasayfa: hero illüstrasyonu, arka plan ve buton hover efektleri eklendi
+[33m1e65194[m Tüm sayfa ve bileşenlerde sıcak, modern ve kullanıcı dostu tasarım güncellemesi
+[33m91b5099[m dbConnect.ts ESLint ve Vercel uyumlu hale getirildi, iletişim sayfası düzeltildi
+[33m75b3c7e[m Bir El ilk sürüm
+[33ma6b3356[m Initial commit from Create Next App
