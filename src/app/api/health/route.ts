@@ -1,10 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    // Basic health check
     const healthData = {
-      status: 'ok',
+      status: "ok",
       time: new Date().toISOString(),
       uptime: process.uptime(),
       memory: process.memoryUsage(),
@@ -15,11 +14,11 @@ export async function GET() {
     return NextResponse.json(healthData, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { 
-        status: 'unhealthy', 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        time: new Date().toISOString()
-      }, 
+      {
+        status: "unhealthy",
+        error: error instanceof Error ? error.message : "Unknown error",
+        time: new Date().toISOString(),
+      },
       { status: 500 }
     );
   }
