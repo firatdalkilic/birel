@@ -109,11 +109,12 @@ cp -r . $RELEASE_PATH/
 # Navigate to new release
 cd $RELEASE_PATH
 
-# Install all dependencies (including devDependencies)
-print_status "Tüm bağımlılıklar yükleniyor (devDependencies dahil)..."
-npm ci
+# Install dependencies with fallback
+print_status "Bağımlılıklar yükleniyor (npm ci fallback ile)..."
+export npm_config_production=false
+npm ci || npm i
 if [ $? -eq 0 ]; then
-    log_message "NPM_INSTALL" "Tüm bağımlılıklar başarıyla yüklendi"
+    log_message "NPM_INSTALL" "Bağımlılıklar başarıyla yüklendi"
 else
     print_error "Bağımlılık yükleme başarısız!"
     log_message "NPM_INSTALL_ERROR" "Bağımlılık yükleme başarısız"
@@ -131,14 +132,14 @@ else
     exit 1
 fi
 
-# Prune devDependencies after build
-print_status "DevDependencies temizleniyor..."
-npm prune --production || true
+# Runtime temizliği - npm v9/v10 uyumlu
+print_status "Runtime temizliği yapılıyor..."
+npm prune --production || npm prune --omit=dev || true
 if [ $? -eq 0 ]; then
-    log_message "NPM_PRUNE" "DevDependencies başarıyla temizlendi"
+    log_message "NPM_PRUNE" "Runtime temizliği başarılı"
 else
-    print_warning "DevDependencies temizleme başarısız, devam ediliyor..."
-    log_message "NPM_PRUNE_WARNING" "DevDependencies temizleme başarısız"
+    print_warning "Runtime temizliği başarısız, devam ediliyor..."
+    log_message "NPM_PRUNE_WARNING" "Runtime temizliği başarısız"
 fi
 
 # Set proper permissions
