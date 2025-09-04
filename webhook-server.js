@@ -8,15 +8,16 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.WEBHOOK_PORT || 3200;
 
-// Trust proxy for nginx
+// Trust proxy for nginx - sadece loopback
 app.set('trust proxy', 'loopback');
 
-// Rate limiting
+// Rate limiting - tek limiter
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 dk
   max: 20,             // IP başına 1 dk'da 20 istek
   standardHeaders: true,
-  legacyHeaders: false,
+  legacyHeaders: false
+  // trustProxy burada AYARLANMAYACAK
 });
 
 app.use(limiter);
