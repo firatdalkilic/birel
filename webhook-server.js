@@ -6,17 +6,15 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
-app.set('trust proxy', true);
 const PORT = process.env.WEBHOOK_PORT || 3200;
+
+// Trust proxy for nginx
+app.set('trust proxy', 'loopback');
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 dakika
-  max: 100, // IP başına maksimum 100 istek
-  message: {
-    error: 'Too many requests from this IP',
-    retryAfter: '15 minutes'
-  },
+  windowMs: 60 * 1000, // 1 dk
+  max: 20,             // IP başına 1 dk'da 20 istek
   standardHeaders: true,
   legacyHeaders: false,
 });

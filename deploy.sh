@@ -3,7 +3,7 @@
 # Bir El App - Otomatik Deployment Script
 # Bu script GitHub webhook tarafından tetiklenir
 
-set -e
+set -euo pipefail
 
 # Environment variables
 APP_NAME="birel-web"
@@ -109,11 +109,11 @@ cp -r . $RELEASE_PATH/
 # Navigate to new release
 cd $RELEASE_PATH
 
-# Install dependencies
-print_status "Bağımlılıklar yükleniyor..."
-npm ci --production --silent
+# Install all dependencies (including devDependencies)
+print_status "Tüm bağımlılıklar yükleniyor (devDependencies dahil)..."
+npm ci
 if [ $? -eq 0 ]; then
-    log_message "NPM_INSTALL" "Bağımlılıklar başarıyla yüklendi"
+    log_message "NPM_INSTALL" "Tüm bağımlılıklar başarıyla yüklendi"
 else
     print_error "Bağımlılık yükleme başarısız!"
     log_message "NPM_INSTALL_ERROR" "Bağımlılık yükleme başarısız"
@@ -129,6 +129,16 @@ else
     print_error "Build başarısız!"
     log_message "BUILD_ERROR" "Build başarısız"
     exit 1
+fi
+
+# Prune devDependencies after build
+print_status "DevDependencies temizleniyor..."
+npm prune --production || true
+if [ $? -eq 0 ]; then
+    log_message "NPM_PRUNE" "DevDependencies başarıyla temizlendi"
+else
+    print_warning "DevDependencies temizleme başarısız, devam ediliyor..."
+    log_message "NPM_PRUNE_WARNING" "DevDependencies temizleme başarısız"
 fi
 
 # Set proper permissions
