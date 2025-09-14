@@ -32,6 +32,29 @@ const CATEGORIES = [
   },
 ];
 
+const FEATURES = [
+  {
+    title: "Güvenli Platform",
+    description: "Tüm kullanıcılarımız kimlik doğrulamasından geçer ve güvenlik önlemlerimizle korunur.",
+    icon: "🔒",
+  },
+  {
+    title: "Hızlı Hizmet",
+    description: "Görevleriniz en kısa sürede tamamlanır. Ortalama 2 saat içinde çözüm.",
+    icon: "⚡",
+  },
+  {
+    title: "Uygun Fiyat",
+    description: "Komisyon oranımız sektörün en düşüğü. Sadece %5 komisyon alıyoruz.",
+    icon: "💰",
+  },
+  {
+    title: "7/24 Destek",
+    description: "Her zaman yanınızdayız. Sorularınız için 7/24 müşteri desteği.",
+    icon: "🎧",
+  },
+];
+
 export default function Home() {
   const router = useRouter();
   const { isAuthenticated, setAuth, setUser } = useAuthStore();
@@ -69,9 +92,15 @@ export default function Home() {
     setIsLoading(false);
   }, [setAuth, setUser]);
 
-  if (isLoading || isAuthenticated) {
-    return null;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#FFC107]"></div>
+      </div>
+    );
   }
+
+  // Authenticated kullanıcılar için de anasayfayı göster, sadece yönlendirme yapma
 
   return (
     <>
@@ -122,6 +151,14 @@ export default function Home() {
       {/* Categories Section */}
       <section className="py-12 md:py-20 bg-white">
         <div className="container-custom">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#0A2540] mb-4">
+              Popüler Kategoriler
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              En çok tercih edilen hizmet kategorilerimizi keşfedin
+            </p>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {CATEGORIES.map((category) => (
               <div key={category.title} className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
@@ -135,6 +172,91 @@ export default function Home() {
                 <p className="text-gray-600">{category.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-12 md:py-20 bg-gray-50">
+        <div className="container-custom">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#0A2540] mb-4">
+              Neden Bir El?
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Türkiye'nin en güvenilir mikro görev platformu olmamızın nedenleri
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {FEATURES.map((feature) => (
+              <div key={feature.title} className="text-center">
+                <div className="text-5xl mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-semibold text-[#0A2540] mb-3">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-12 md:py-20 bg-[#0A2540] text-white">
+        <div className="container-custom text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Hemen Başla!
+          </h2>
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            Binlerce kullanıcıya katıl ve gündelik işlerini kolaylaştır
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <a 
+              href="/kayit" 
+              className="bg-[#FFC107] text-[#0A2540] px-8 py-4 rounded-lg font-medium hover:bg-[#FFC107]/90 transition-colors text-lg"
+            >
+              Ücretsiz Kayıt Ol
+            </a>
+            <a 
+              href="/giris"
+              className="bg-transparent text-white px-8 py-4 rounded-lg font-medium border-2 border-white hover:bg-white hover:text-[#0A2540] transition-colors text-lg"
+            >
+              Giriş Yap
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-12 md:py-20 bg-white">
+        <div className="container-custom">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div>
+              <div className="text-4xl md:text-5xl font-bold text-[#FFC107] mb-2">
+                1000+
+              </div>
+              <div className="text-xl text-gray-600">
+                Mutlu Kullanıcı
+              </div>
+            </div>
+            <div>
+              <div className="text-4xl md:text-5xl font-bold text-[#FFC107] mb-2">
+                5000+
+              </div>
+              <div className="text-xl text-gray-600">
+                Tamamlanan Görev
+              </div>
+            </div>
+            <div>
+              <div className="text-4xl md:text-5xl font-bold text-[#FFC107] mb-2">
+                4.9/5
+              </div>
+              <div className="text-xl text-gray-600">
+                Kullanıcı Puanı
+              </div>
+            </div>
           </div>
         </div>
       </section>

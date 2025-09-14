@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
+import { useToast } from "@/components/ToastProvider";
 
 export default function LoginPage() {
   const router = useRouter();
   const { setAuth, setUser } = useAuthStore();
+  const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   
@@ -50,12 +52,17 @@ export default function LoginPage() {
       setAuth(true);
       setUser(data.user);
       
+      // Başarı toast'ı
+      showToast(`Hoş geldiniz, ${data.user.firstName}!`, 'success');
+      
       // Rol seçimine yönlendir
       router.push('/rol-sec');
 
     } catch (error: any) {
       console.error('Giriş hatası:', error);
-      setError(error.message || 'Giriş yapılırken bir hata oluştu');
+      const errorMessage = error.message || 'Giriş yapılırken bir hata oluştu';
+      setError(errorMessage);
+      showToast(errorMessage, 'error');
     } finally {
       setIsLoading(false);
     }

@@ -3,17 +3,21 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: Request) {
+  const startTime = Date.now();
+  
   try {
-    console.log('Giriş API çağrısı başladı');
+    logger.api.request('POST', '/api/login');
     await dbConnect();
     
     const body = await req.json();
-    console.log('Gelen veri:', { ...body, password: '[GİZLENDİ]' });
+    logger.debug('Login attempt started', { email: body.email });
 
     // Validasyon
     if (!body.email || !body.password) {
+      logger.auth.loginAttempt(body.email || 'unknown', false, 'Missing credentials');
       return NextResponse.json(
         { error: 'E-posta ve şifre zorunludur' },
         { status: 400 }
@@ -23,7 +27,7 @@ export async function POST(req: Request) {
     // Kullanıcıyı bul
     const user = await User.findOne({ email: body.email });
     if (!user) {
-      console.log('Kullanıcı bulunamadı:', body.email);
+      logger.auth.loginAttempt(body.email, false, 'User not found');
       return NextResponse.json(
         { error: 'E-posta veya şifre hatalı' },
         { status: 401 }
@@ -33,7 +37,7 @@ export async function POST(req: Request) {
     // Şifre kontrolü
     const isMatch = await bcrypt.compare(body.password, user.passwordHash);
     if (!isMatch) {
-      console.log('Şifre eşleşmedi:', body.email);
+      logger.auth.loginAttempt(body.email, false, 'Invalid password');
       return NextResponse.json(
         { error: 'E-posta veya şifre hatalı' },
         { status: 401 }
@@ -60,6 +64,10 @@ export async function POST(req: Request) {
       email: user.email,
     };
 
+    // Başarılı giriş logla
+    logger.auth.loginAttempt(body.email, true);
+    logger.info('Login successful', { userId: user._id.toString() }, user._id.toString(), 'LOGIN_SUCCESS');
+
     // Response oluştur
     const response = NextResponse.json({
       message: 'Giriş başarılı',
@@ -85,10 +93,17 @@ export async function POST(req: Request) {
       httpOnly: false // Client-side erişim için
     });
 
+    // API response logla
+    const duration = Date.now() - startTime;
+    logger.api.response('POST', '/api/login', 200, duration, user._id.toString());
+
     return response;
 
   } catch (error: any) {
-    console.error('API hatası:', error);
+    const duration = Date.now() - startTime;
+    logger.api.error('POST', '/api/login', error);
+    logger.api.response('POST', '/api/login', 500, duration);
+    
     return NextResponse.json(
       { error: error.message || 'Bir hata oluştu' },
       { status: 500 }

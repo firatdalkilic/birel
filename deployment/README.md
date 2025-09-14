@@ -98,3 +98,4 @@ Sorun yaşarsanız:
 - Sistem kaynaklarını kontrol edin: `htop`
 
 
+

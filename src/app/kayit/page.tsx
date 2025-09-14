@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
+import { useToast } from "@/components/ToastProvider";
 
 interface FormError {
   field: string;
@@ -13,6 +14,7 @@ interface FormError {
 export default function RegisterPage() {
   const router = useRouter();
   const { setAuth } = useAuthStore();
+  const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<FormError[]>([]);
   
@@ -123,10 +125,16 @@ export default function RegisterPage() {
       // Başarılı kayıt
       localStorage.setItem('token', data.token);
       setAuth(true);
+      
+      // Başarı toast'ı
+      showToast(`Hoş geldiniz, ${data.user.firstName}! Hesabınız başarıyla oluşturuldu.`, 'success');
+      
       router.push('/rol-sec');
       
     } catch (error) {
-      setErrors([{ field: 'general', message: 'Bir hata oluştu. Lütfen tekrar deneyin.' }]);
+      const errorMessage = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+      setErrors([{ field: 'general', message: errorMessage }]);
+      showToast(errorMessage, 'error');
     } finally {
       setIsLoading(false);
     }
