@@ -11,6 +11,7 @@ export function middleware(request: NextRequest) {
   // Static dosyalar ve API routes için bypass
   if (
     path.startsWith('/_next') ||
+    path.startsWith('/next') ||  // ← Bu satırı ekleyin
     path.startsWith('/static') ||
     path.startsWith('/api/') ||
     path.includes('favicon.ico') ||
@@ -18,7 +19,11 @@ export function middleware(request: NextRequest) {
     path.includes('.png') ||
     path.includes('.jpg') ||
     path.includes('.jpeg') ||
-    path.includes('.gif')
+    path.includes('.gif') ||
+    path.includes('.js') ||     // ← Bu satırı ekleyin
+    path.includes('.css') ||    // ← Bu satırı ekleyin
+    path.includes('.woff') ||   // ← Bu satırı ekleyin
+    path.includes('.woff2')     // ← Bu satırı ekleyin
   ) {
     return NextResponse.next();
   }
