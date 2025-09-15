@@ -28,7 +28,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 bg-white shadow-sm">
       <div className="container-custom">
         <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
+          {/* Logo - Sadece sarı renk */}
           <Link 
             href="/" 
             className="flex items-center cursor-pointer"
