@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
-import Navbar from '@/components/Navbar';
 
 export default function DashboardLayout({
   children,
@@ -28,7 +27,6 @@ export default function DashboardLayout({
 
   return (
     <div>
-      <Navbar />
       <main className="container-custom py-8">
         {children}
       </main>
