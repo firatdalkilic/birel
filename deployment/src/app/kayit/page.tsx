@@ -27,11 +27,6 @@ export default function RegisterPage() {
     confirmPassword: "",
   });
 
-  useEffect(() => {
-    // Sayfa yüklendiğinde tüm cache'i temizle
-    localStorage.clear();
-  }, []);
-
   const validateForm = (): boolean => {
     const newErrors: FormError[] = [];
 

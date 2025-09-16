@@ -6,17 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 
 export default function RoleSelectionPage() {
   const router = useRouter();
-  const { isAuthenticated, setRole } = useAuthStore();
-
-  useEffect(() => {
-    // Sayfa yüklendiğinde tüm cache'i temizle
-    localStorage.clear();
-    
-    // Giriş yapmamış kullanıcıları yönlendir
-    if (!isAuthenticated) {
-      router.push('/giris');
-    }
-  }, [isAuthenticated, router]);
+  const { setRole } = useAuthStore();
 
   const handleRoleSelect = (role: 'gorevveren' | 'gorevli') => {
     // Store'u güncelle
@@ -24,7 +14,6 @@ export default function RoleSelectionPage() {
     
     // Local storage'a kaydet
     localStorage.setItem('selectedRole', role);
-    localStorage.setItem('hasSelectedInitialRole', 'true');
     
     // Yönlendir
     router.push(`/dashboard/${role}`);

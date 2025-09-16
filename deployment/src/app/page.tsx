@@ -57,14 +57,10 @@ const FEATURES = [
 
 export default function Home() {
   const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Sayfa yüklendiğinde tüm cache'i temizle
-    localStorage.clear();
-    
-    // Sadece loading'i kapat, AuthProvider auth kontrolünü yapacak
+    // Sadece loading'i kapat
     setIsLoading(false);
   }, []);
 

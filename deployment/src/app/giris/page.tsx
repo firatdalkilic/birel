@@ -8,7 +8,7 @@ import { useToast } from "@/components/ToastProvider";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setAuth, setUser, isAuthenticated } = useAuthStore();
+  const { setAuth, setUser } = useAuthStore();
   const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -17,16 +17,6 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
-
-  useEffect(() => {
-    // Sayfa yüklendiğinde tüm cache'i temizle
-    localStorage.clear();
-    
-    // Eğer zaten giriş yapmışsa rol seçme sayfasına yönlendir
-    if (isAuthenticated) {
-      router.push('/rol-sec');
-    }
-  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
