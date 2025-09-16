@@ -13,9 +13,25 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuthenticated, logout } = useAuthStore();
 
-  const handleLogout = () => {
-    logout();
-    router.push('/');
+  const handleLogout = async () => {
+    try {
+      // API logout endpoint'ini çağır
+      await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      // Local state'i temizle
+      logout();
+      
+      // Ana sayfaya yönlendir
+      router.push('/');
+    } catch (error) {
+      console.error('Logout hatası:', error);
+      // Hata olsa bile local state'i temizle
+      logout();
+      router.push('/');
+    }
   };
 
   const handleLogoClick = (e: React.MouseEvent) => {

@@ -93,6 +93,13 @@ export async function POST(req: Request) {
       httpOnly: false // Client-side erişim için
     });
 
+    // SelectedRole cookie'sini temizle (yeni giriş için)
+    response.cookies.set('selectedRole', '', {
+      ...cookieOptions,
+      httpOnly: false,
+      maxAge: 0 // Hemen sil
+    });
+
     // API response logla
     const duration = Date.now() - startTime;
     logger.api.response('POST', '/api/login', 200, duration, user._id.toString());

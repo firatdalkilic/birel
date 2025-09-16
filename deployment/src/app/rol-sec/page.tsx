@@ -15,6 +15,9 @@ export default function RoleSelectionPage() {
     // Local storage'a kaydet
     localStorage.setItem('selectedRole', role);
     
+    // Cookie'ye kaydet
+    document.cookie = `selectedRole=${role}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax`;
+    
     // Yönlendir
     router.push(`/dashboard/${role}`);
   };

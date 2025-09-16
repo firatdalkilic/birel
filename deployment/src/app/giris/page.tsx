@@ -1,10 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { useToast } from "@/components/ToastProvider";
+
+// Cache engelleme
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function LoginPage() {
   const router = useRouter();

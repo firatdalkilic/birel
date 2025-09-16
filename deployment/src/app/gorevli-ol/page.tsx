@@ -143,7 +143,7 @@ export default function GorevliKayit() {
       localStorage.setItem("token", data.token);
       
       // Başarılı kayıt sonrası yönlendirme
-      router.push("/dashboard");
+      router.push("/");
     } catch (error: any) {
       console.error('Kayıt hatası:', error);
       setErrors((prev) => ({ ...prev, submit: error.message }));
