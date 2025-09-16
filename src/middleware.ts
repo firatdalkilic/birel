@@ -51,6 +51,6 @@ export function middleware(request: NextRequest) {
 // Middleware'in çalışacağı path'leri belirle
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|webhooks).*)',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };
