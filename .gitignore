@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# deployment folder - büyük dosyalar
+deployment/.next/
+deployment/node_modules/
+deployment/.next/cache/
