@@ -61,6 +61,9 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Sayfa yüklendiğinde tüm cache'i temizle
+    localStorage.clear();
+    
     // Sadece loading'i kapat, AuthProvider auth kontrolünü yapacak
     setIsLoading(false);
   }, []);

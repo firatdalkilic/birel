@@ -19,6 +19,9 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
+    // Sayfa yüklendiğinde tüm cache'i temizle
+    localStorage.clear();
+    
     // Eğer zaten giriş yapmışsa rol seçme sayfasına yönlendir
     if (isAuthenticated) {
       router.push('/rol-sec');

@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
 interface User {
   id: string;
@@ -22,57 +21,49 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
+export const useAuthStore = create<AuthState>()((set) => ({
+  isAuthenticated: false,
+  selectedRole: null,
+  hasSelectedInitialRole: false,
+  user: null,
+  
+  setAuth: (isAuth) => set({ isAuthenticated: isAuth }),
+  setRole: (role) => set({ selectedRole: role }),
+  setUser: (user) => set({ user }),
+  setHasSelectedInitialRole: (value) => set({ hasSelectedInitialRole: value }),
+  
+  checkAuth: () => {
+    if (typeof window === 'undefined') return;
+    
+    // Sadece localStorage'ı kontrol et
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('selectedRole');
+    const userStr = localStorage.getItem('user');
+    const hasSelectedRole = localStorage.getItem('hasSelectedInitialRole');
+    
+    set({
+      isAuthenticated: !!token,
+      selectedRole: role,
+      user: userStr ? JSON.parse(userStr) : null,
+      hasSelectedInitialRole: hasSelectedRole === 'true'
+    });
+  },
+
+  logout: () => {
+    if (typeof window === 'undefined') return;
+    
+    // Tüm localStorage'ı temizle
+    localStorage.clear();
+    
+    // Zustand persist storage'ı da temizle
+    localStorage.removeItem('auth-storage');
+    
+    // State'i temizle
+    set({
       isAuthenticated: false,
       selectedRole: null,
-      hasSelectedInitialRole: false,
       user: null,
-      
-      setAuth: (isAuth) => set({ isAuthenticated: isAuth }),
-      setRole: (role) => set({ selectedRole: role }),
-      setUser: (user) => set({ user }),
-      setHasSelectedInitialRole: (value) => set({ hasSelectedInitialRole: value }),
-      
-      checkAuth: () => {
-        if (typeof window === 'undefined') return;
-        
-        // Sadece localStorage'ı kontrol et
-        const token = localStorage.getItem('token');
-        const role = localStorage.getItem('selectedRole');
-        const userStr = localStorage.getItem('user');
-        const hasSelectedRole = localStorage.getItem('hasSelectedInitialRole');
-        
-        set({
-          isAuthenticated: !!token,
-          selectedRole: role,
-          user: userStr ? JSON.parse(userStr) : null,
-          hasSelectedInitialRole: hasSelectedRole === 'true'
-        });
-      },
-
-      logout: () => {
-        if (typeof window === 'undefined') return;
-        
-        // LocalStorage'ı temizle
-        localStorage.removeItem('token');
-        localStorage.removeItem('selectedRole');
-        localStorage.removeItem('user');
-        localStorage.removeItem('hasSelectedInitialRole');
-        
-        // State'i temizle
-        set({
-          isAuthenticated: false,
-          selectedRole: null,
-          user: null,
-          hasSelectedInitialRole: false
-        });
-      }
-    }),
-    {
-      name: 'auth-storage',
-      skipHydration: true
-    }
-  )
-);
+      hasSelectedInitialRole: false
+    });
+  }
+}));
