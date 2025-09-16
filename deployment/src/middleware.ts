@@ -8,13 +8,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Token kontrolü
-  const token = request.cookies.get('token')?.value;
-
   // Static dosyalar ve API routes için bypass
   if (
     path.startsWith('/_next') ||
-    path.startsWith('/next') ||  // ← Bu satırı ekleyin
+    path.startsWith('/next') ||
     path.startsWith('/static') ||
     path.startsWith('/api/') ||
     path.includes('favicon.ico') ||
@@ -23,10 +20,10 @@ export function middleware(request: NextRequest) {
     path.includes('.jpg') ||
     path.includes('.jpeg') ||
     path.includes('.gif') ||
-    path.includes('.js') ||     // ← Bu satırı ekleyin
-    path.includes('.css') ||    // ← Bu satırı ekleyin
-    path.includes('.woff') ||   // ← Bu satırı ekleyin
-    path.includes('.woff2')     // ← Bu satırı ekleyin
+    path.includes('.js') ||
+    path.includes('.css') ||
+    path.includes('.woff') ||
+    path.includes('.woff2')
   ) {
     return NextResponse.next();
   }
@@ -38,6 +35,9 @@ export function middleware(request: NextRequest) {
   if (publicRoutes.includes(path)) {
     return NextResponse.next();
   }
+
+  // Token kontrolü - cookie'den kontrol et
+  const token = request.cookies.get('token')?.value;
 
   // Token yoksa giriş sayfasına yönlendir
   if (!token) {

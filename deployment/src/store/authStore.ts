@@ -38,51 +38,17 @@ export const useAuthStore = create<AuthState>()(
       checkAuth: () => {
         if (typeof window === 'undefined') return;
         
-        // Hem localStorage hem cookie'leri kontrol et
-        const localStorageToken = localStorage.getItem('token');
-        const localStorageRole = localStorage.getItem('selectedRole');
-        const localStorageUser = localStorage.getItem('user');
-        const localStorageHasSelectedRole = localStorage.getItem('hasSelectedInitialRole');
-        
-        // Cookie'leri kontrol et
-        const cookieToken = document.cookie.includes('token=');
-        const cookieUser = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('user='));
-        const cookieRole = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('selectedRole='));
-        const cookieHasSelectedRole = document.cookie.includes('hasSelectedInitialRole=true');
-        
-        // Token varsa (localStorage veya cookie'de) auth true yap
-        const hasToken = !!localStorageToken || cookieToken;
-        
-        // Kullanıcı bilgilerini al (localStorage öncelikli)
-        let user = null;
-        if (localStorageUser) {
-          try {
-            user = JSON.parse(localStorageUser);
-          } catch (error) {
-            console.error('localStorage user parse error:', error);
-          }
-        } else if (cookieUser) {
-          try {
-            const userJson = decodeURIComponent(cookieUser.split('=')[1]);
-            user = JSON.parse(userJson);
-          } catch (error) {
-            console.error('cookie user parse error:', error);
-          }
-        }
-        
-        // Rol bilgilerini al (localStorage öncelikli)
-        const role = localStorageRole || (cookieRole ? cookieRole.split('=')[1] : null);
-        const hasSelectedRole = localStorageHasSelectedRole === 'true' || cookieHasSelectedRole;
+        // Sadece localStorage'ı kontrol et
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('selectedRole');
+        const userStr = localStorage.getItem('user');
+        const hasSelectedRole = localStorage.getItem('hasSelectedInitialRole');
         
         set({
-          isAuthenticated: hasToken,
+          isAuthenticated: !!token,
           selectedRole: role,
-          user: user,
-          hasSelectedInitialRole: hasSelectedRole
+          user: userStr ? JSON.parse(userStr) : null,
+          hasSelectedInitialRole: hasSelectedRole === 'true'
         });
       },
 
@@ -94,12 +60,6 @@ export const useAuthStore = create<AuthState>()(
         localStorage.removeItem('selectedRole');
         localStorage.removeItem('user');
         localStorage.removeItem('hasSelectedInitialRole');
-        
-        // Cookie'leri temizle
-        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        document.cookie = 'selectedRole=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        document.cookie = 'hasSelectedInitialRole=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         
         // State'i temizle
         set({

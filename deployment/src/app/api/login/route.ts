@@ -78,11 +78,10 @@ export async function POST(req: Request) {
     // Cookie'leri ayarla
     const cookieOptions = {
       httpOnly: true,
-      secure: false, // HTTP için false olmalı
+      secure: process.env.NODE_ENV === 'production', // Production'da true
       sameSite: 'lax' as const,
       maxAge: 7 * 24 * 60 * 60, // 7 gün
-      path: '/',
-      domain: 'birelapp.com' // Domain'i açıkça belirt
+      path: '/'
     };
 	
     // Token'ı HttpOnly cookie olarak ayarla

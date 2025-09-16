@@ -55,10 +55,6 @@ export default function LoginPage() {
       // Kullanıcı bilgilerini kaydet
       localStorage.setItem('user', JSON.stringify(data.user));
       
-      // Cookie'lere de kaydet
-      document.cookie = `token=${data.token}; path=/; max-age=86400`; // 24 saat
-      document.cookie = `user=${encodeURIComponent(JSON.stringify(data.user))}; path=/; max-age=86400`;
-      
       // Auth state'i güncelle
       setAuth(true);
       setUser(data.user);
