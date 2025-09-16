@@ -21,6 +21,7 @@ export default function RoleSelectionPage() {
     
     // Local storage'a kaydet
     localStorage.setItem('selectedRole', role);
+    localStorage.setItem('hasSelectedInitialRole', 'true');
     
     // Yönlendir
     router.push(`/dashboard/${role}`);

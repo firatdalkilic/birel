@@ -16,6 +16,7 @@ export default function RolSecici() {
     
     // Local storage'a kaydet
     localStorage.setItem('selectedRole', role);
+    localStorage.setItem('hasSelectedInitialRole', 'true');
     
     // Dropdown'ı kapat
     setIsOpen(false);
