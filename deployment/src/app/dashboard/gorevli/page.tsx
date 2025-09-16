@@ -35,10 +35,8 @@ export default function GorevliDashboard() {
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/giris');
-    } else if (selectedRole !== 'gorevli') {
-      router.push('/rol-sec');
     }
-  }, [isAuthenticated, selectedRole, router]);
+  }, [isAuthenticated, router]);
 
   useEffect(() => {
     // TODO: Backend'den kullanıcı istatistiklerini al

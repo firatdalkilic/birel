@@ -36,10 +36,8 @@ export default function GorevVerenDashboard() {
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/giris');
-    } else if (selectedRole !== 'gorevveren') {
-      router.push('/rol-sec');
     }
-  }, [isAuthenticated, selectedRole, router]);
+  }, [isAuthenticated, router]);
 
   useEffect(() => {
     // TODO: Backend'den kullanıcı istatistiklerini ve görevlerini al

@@ -121,7 +121,8 @@ export default function RegisterPage() {
       // Başarı toast'ı
       showToast(`Hoş geldiniz, ${data.user.firstName}! Hesabınız başarıyla oluşturuldu.`, 'success');
       
-      router.push('/rol-sec');
+      // Ana sayfaya yönlendir
+      router.push('/');
       
     } catch (error) {
       const errorMessage = 'Bir hata oluştu. Lütfen tekrar deneyin.';
