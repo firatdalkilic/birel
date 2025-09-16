@@ -9,6 +9,9 @@ export default function RoleSelectionPage() {
   const { isAuthenticated, setRole } = useAuthStore();
 
   useEffect(() => {
+    // Sayfa yüklendiğinde tüm cache'i temizle
+    localStorage.clear();
+    
     // Giriş yapmamış kullanıcıları yönlendir
     if (!isAuthenticated) {
       router.push('/giris');

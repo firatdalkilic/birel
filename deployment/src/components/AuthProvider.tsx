@@ -11,9 +11,10 @@ export default function AuthProvider({
   const { checkAuth } = useAuthStore();
 
   useEffect(() => {
-    // İlk yüklemede auth durumunu kontrol et
-    checkAuth();
-  }, [checkAuth]);
+    // Cache temizle ve auth kontrolü yapma
+    localStorage.clear();
+    // checkAuth(); // Devre dışı bırakıldı
+  }, []);
 
   return <>{children}</>;
 }
