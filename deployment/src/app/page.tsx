@@ -57,29 +57,13 @@ const FEATURES = [
 
 export default function Home() {
   const router = useRouter();
-  const { isAuthenticated, setAuth, setUser } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Sadece auth state'i güncelle, otomatik yönlendirme yapma
-    const token = document.cookie.includes('token=');
-    if (token) {
-      const userStr = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('user='));
-      
-      if (userStr) {
-        try {
-          const userJson = decodeURIComponent(userStr.split('=')[1]);
-          setAuth(true);
-          setUser(JSON.parse(userJson));
-        } catch (error) {
-          console.error('User cookie parse error:', error);
-        }
-      }
-    }
+    // Sadece loading'i kapat, AuthProvider auth kontrolünü yapacak
     setIsLoading(false);
-  }, [setAuth, setUser]);
+  }, []);
 
   if (isLoading) {
     return (
