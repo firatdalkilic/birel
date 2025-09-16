@@ -61,6 +61,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Sadece auth state'i güncelle, otomatik yönlendirme yapma
     const token = document.cookie.includes('token=');
     if (token) {
       const userStr = document.cookie
@@ -72,18 +73,6 @@ export default function Home() {
           const userJson = decodeURIComponent(userStr.split('=')[1]);
           setAuth(true);
           setUser(JSON.parse(userJson));
-          
-          const hasSelectedRole = document.cookie.includes('hasSelectedInitialRole=true');
-          const selectedRoleCookie = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('selectedRole='));
-          const selectedRole = selectedRoleCookie ? selectedRoleCookie.split('=')[1] : null;
-          
-          if (hasSelectedRole && selectedRole) {
-            window.location.href = `/dashboard/${selectedRole}`;
-          } else {
-            window.location.href = '/rol-sec';
-          }
         } catch (error) {
           console.error('User cookie parse error:', error);
         }
