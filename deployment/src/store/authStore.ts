@@ -54,11 +54,19 @@ export const useAuthStore = create<AuthState>()(
       logout: () => {
         if (typeof window === 'undefined') return;
         
+        // LocalStorage'ı temizle
         localStorage.removeItem('token');
         localStorage.removeItem('selectedRole');
         localStorage.removeItem('user');
         localStorage.removeItem('hasSelectedInitialRole');
         
+        // Cookie'leri temizle
+        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'selectedRole=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'hasSelectedInitialRole=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        
+        // State'i temizle
         set({
           isAuthenticated: false,
           selectedRole: null,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
@@ -8,7 +8,7 @@ import { useToast } from "@/components/ToastProvider";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setAuth, setUser } = useAuthStore();
+  const { setAuth, setUser, isAuthenticated } = useAuthStore();
   const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -17,6 +17,13 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    // Eğer zaten giriş yapmışsa rol seçme sayfasına yönlendir
+    if (isAuthenticated) {
+      router.push('/rol-sec');
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +54,10 @@ export default function LoginPage() {
       
       // Kullanıcı bilgilerini kaydet
       localStorage.setItem('user', JSON.stringify(data.user));
+      
+      // Cookie'lere de kaydet
+      document.cookie = `token=${data.token}; path=/; max-age=86400`; // 24 saat
+      document.cookie = `user=${encodeURIComponent(JSON.stringify(data.user))}; path=/; max-age=86400`;
       
       // Auth state'i güncelle
       setAuth(true);
