@@ -8,6 +8,11 @@ export function middleware(request: NextRequest) {
   // URL'den path'i al
   const path = request.nextUrl.pathname;
 
+  // Webhook routes için bypass - auth kontrolü yapılmaz
+  if (path.startsWith('/webhooks/')) {
+    return NextResponse.next();
+  }
+
   // Static dosyalar ve API routes için bypass
   if (
     path.startsWith('/_next') ||
