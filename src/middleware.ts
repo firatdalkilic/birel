@@ -2,16 +2,14 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  // Token kontrolü
-  const token = request.cookies.get('token')?.value;
-
-  // URL'den path'i al
   const path = request.nextUrl.pathname;
 
-  // Webhook routes için bypass - auth kontrolü yapılmaz
   if (path.startsWith('/webhooks/')) {
     return NextResponse.next();
   }
+
+  // Token kontrolü
+  const token = request.cookies.get('token')?.value;
 
   // Static dosyalar ve API routes için bypass
   if (
