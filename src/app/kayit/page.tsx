@@ -27,13 +27,6 @@ export default function RegisterPage() {
     confirmPassword: "",
   });
 
-  useEffect(() => {
-    // Token kontrolü
-    const token = localStorage.getItem('token');
-    if (token) {
-      router.push('/rol-sec');
-    }
-  }, [router]);
 
   const validateForm = (): boolean => {
     const newErrors: FormError[] = [];

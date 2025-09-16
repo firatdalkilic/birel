@@ -56,7 +56,7 @@ export default function LoginPage() {
       showToast(`Hoş geldiniz, ${data.user.firstName}!`, 'success');
       
       // Rol seçimine yönlendir
-      router.push('/dashboard');
+      router.push('/rol-sec');
 
     } catch (error: any) {
       console.error('Giriş hatası:', error);
