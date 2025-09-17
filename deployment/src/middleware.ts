@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   
   // ✅ Webhook'ları BYPASS ET
@@ -52,7 +52,7 @@ export function middleware(request: NextRequest) {
     // Token varsa doğrula
     try {
       const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default-secret');
-      await jwtVerify(token, secret);
+      await jwtVerify(token!, secret);
       
       // Token geçerli - otomatik yönlendirme yap
       if (selectedRole) {
@@ -74,7 +74,7 @@ export function middleware(request: NextRequest) {
   // Token varsa JWT doğrulaması yap
   try {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default-secret');
-    await jwtVerify(token, secret);
+    await jwtVerify(token!, secret);
     
     // Token geçerli - devam et
     return NextResponse.next();
