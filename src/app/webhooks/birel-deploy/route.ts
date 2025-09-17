@@ -15,6 +15,11 @@ function verifySignature(secret: string, body: string, signature256: string | nu
 export async function POST(req: Request) {
   console.log('Webhook POST received');
   
+  // Rate limiting bypass for webhooks
+  const headers = new Headers();
+  headers.set('X-RateLimit-Limit', 'unlimited');
+  headers.set('X-RateLimit-Remaining', 'unlimited');
+  
   try {
     const secret = process.env.GITHUB_WEBHOOK_SECRET;
     if (!secret) {
