@@ -5,6 +5,7 @@ import { jwtVerify } from 'jose';
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
+  // Webhook'ları en başta bypass et - ÖNEMLİ!
   if (path.startsWith('/webhooks/')) {
     return NextResponse.next();
   }
@@ -110,6 +111,6 @@ export async function middleware(request: NextRequest) {
 // Middleware'in çalışacağı path'leri belirle
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|webhooks|api).*)',
   ],
 };
