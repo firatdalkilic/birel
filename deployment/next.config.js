@@ -5,6 +5,9 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   
+  // Trailing slash configuration
+  trailingSlash: false,
+  
   // Image optimization
   images: {
     domains: ['images.unsplash.com'],

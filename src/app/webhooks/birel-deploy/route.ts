@@ -26,5 +26,5 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-  return NextResponse.json({ message: 'Method Not Allowed' }, { status: 405 });
+  return NextResponse.json({ message: 'GitHub webhook endpoint is active' }, { status: 200 });
 }
