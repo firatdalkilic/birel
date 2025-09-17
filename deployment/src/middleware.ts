@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
-
-  // Webhook'ları en başta bypass et - ÖNEMLİ!
+  
+  // ✅ Webhook'ları BYPASS ET
   if (path.startsWith('/webhooks/')) {
     return NextResponse.next();
   }
@@ -111,6 +111,6 @@ export async function middleware(request: NextRequest) {
 // Middleware'in çalışacağı path'leri belirle
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|webhooks).*)',
+    '/((?!_next/static|_next/image|favicon.ico|webhooks/).*)',
   ],
 };
