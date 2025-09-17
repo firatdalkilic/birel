@@ -10,6 +10,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Token kontrolü - cookie'den kontrol et (webhook'lar hariç)
+  const token = request.cookies.get('token')?.value;
+  const selectedRole = request.cookies.get('selectedRole')?.value;
+
   // Static dosyalar ve API routes için bypass
   if (
     path.startsWith('/_next') ||
@@ -38,10 +42,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Token kontrolü - cookie'den kontrol et
-  const token = request.cookies.get('token')?.value;
-  const selectedRole = request.cookies.get('selectedRole')?.value;
-
   // Giriş ve kayıt sayfaları için özel kontrol
   if (path === '/giris' || path === '/kayit') {
     if (!token) {
@@ -66,8 +66,8 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // Token yoksa giriş sayfasına yönlendir
-  if (!token) {
+  // Token yoksa giriş sayfasına yönlendir (webhook'lar hariç)
+  if (!path.startsWith('/webhooks/') && !token) {
     return NextResponse.redirect(new URL('/giris', request.url));
   }
 
@@ -103,8 +103,10 @@ export function middleware(request: NextRequest) {
       httpOnly: false
     });
 
-    // Giriş sayfasına yönlendir
-    return NextResponse.redirect(new URL('/giris', request.url));
+    // Giriş sayfasına yönlendir (webhook'lar hariç)
+    if (!path.startsWith('/webhooks/')) {
+      return NextResponse.redirect(new URL('/giris', request.url));
+    }
   }
 }
 
